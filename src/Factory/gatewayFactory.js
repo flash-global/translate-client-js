@@ -5,4 +5,6 @@ export default function(config) {
 
     gateway.baseUrl = config._baseUrl;
     gateway.namespace = config.namespace;
+
+    return gateway;
 }
