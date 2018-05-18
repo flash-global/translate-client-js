@@ -7,6 +7,7 @@ export default function(config) {
     manager.gateway = gatewayFactory(config);
     manager.defaultLanguage = config.defaultLanguage;
     manager.fallbackLanguage = config.fallbackLanguage;
+    manager.cacheDuration = config.cacheDuration;
 
     return manager;
 }

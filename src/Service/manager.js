@@ -2,6 +2,7 @@ export default class Manager {
     constructor() {
         this._defaultLanguage = '';
         this._fallbackLanguage = '';
+        this._cacheDuration = 0;
         this._gateway = null;
     }
 
@@ -11,12 +12,11 @@ export default class Manager {
 
     _pullIfNeefed() {
         return new Promise(resolve, reject => {
-            if(this._checkPullNeeded()) {
+            if (this._checkPullNeeded()) {
                 this._pull()
                     .then(() => resolve())
                     .catch(() => reject());
-            }
-            else {
+            } else {
                 resolve();
             }
         });
@@ -25,11 +25,11 @@ export default class Manager {
     _checkPullNeeded() {
         const localTranslations = localStorage.getItem('translations');
 
-        if(localTranslations === null) {
+        if (localTranslations === null) {
             return false;
         }
 
-        if(!(localTranslations.pulledAt instanceof Date)) {
+        if (!(localTranslations.pulledAt instanceof Date)) {
             return false;
         }
 
@@ -58,6 +58,10 @@ export default class Manager {
 
     set fallbackLanguage(fallbackLanguage) {
         this._fallbackLanguage = fallbackLanguage;
+    }
+    
+    set cacheDuration(cacheDuration) {
+        this._cacheDuration = cacheDuration;
     }
 
     set gateway(gateway) {

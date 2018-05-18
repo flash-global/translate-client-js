@@ -9,7 +9,8 @@ class Translate {
             baseUrl: '',
             defaultLanguage: 'fr_FR',
             fallbackLanguage: 'en_US',
-            namespace: ''
+            namespace: '',
+            cacheDuration: 86400
         };
 
         this._config = {};
