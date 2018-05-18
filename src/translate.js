@@ -5,30 +5,30 @@ import managerFactory from './Factory/managerFactory';
 
 class Translate {
     constructor(config) {
-        this._defaultConfig = {
+        this.defaultConfig = {
             baseUrl: '',
-            defaultLanguage: 'fr_FR',
-            fallbackLanguage: 'en_US',
+            defaultLanguage: 'frFR',
+            fallbackLanguage: 'enGB',
             namespace: '',
             cacheDuration: 86400
         };
 
-        this._config = {};
-        this._manager = null;
+        this.config = {};
+        this.manager = null;
 
-        this._mergeConfig();
-        this._initManager();
+        this.mergeConfig();
+        this.initManager();
     }
 
     translate(key) {
-        return this._manager.translate(key);
+        return this.manager.translate(key);
     }
 
-    _mergeConfig(config) {
-        Object.assign(this._config, this._defaultConfig, config);
+    mergeConfig(config) {
+        Object.assign(this.config, this.defaultConfig, config);
     }
 
-    _initManager() {
-        this._manager = managerFactory(this._config);
+    initManager() {
+        this.manager = managerFactory(this.config);
     }
 }

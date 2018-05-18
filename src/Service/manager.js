@@ -1,19 +1,20 @@
 export default class Manager {
     constructor() {
-        this._defaultLanguage = '';
-        this._fallbackLanguage = '';
-        this._cacheDuration = 0;
-        this._gateway = null;
+        this.defaultLanguage = '';
+        this.fallbackLanguage = '';
+        this.cacheDuration = 0;
+        this.gateway = null;
+        this.translations = localStorage.getItem('translations');
     }
 
     translate(key) {
-        return this._pullIfNeefed().then(() => this._findTranslation(key));
+        return this.pullIfNeefed().then(() => this.findTranslation(key));
     }
 
-    _pullIfNeefed() {
-        return new Promise(resolve, reject => {
-            if (this._checkPullNeeded()) {
-                this._pull()
+    pullIfNeefed() {
+        return new Promise((resolve, reject) => {
+            if (this.checkPullNeeded()) {
+                this.pull()
                     .then(() => resolve())
                     .catch(() => reject());
             } else {
@@ -22,49 +23,48 @@ export default class Manager {
         });
     }
 
-    _checkPullNeeded() {
-        const localTranslations = localStorage.getItem('translations');
-
-        if (localTranslations === null) {
+    checkPullNeeded() {
+        if (this.translations === null) {
             return false;
         }
 
-        if (!(localTranslations.pulledAt instanceof Date)) {
+        if (!(this.translations.pulledAt instanceof Date)) {
             return false;
         }
 
-        return localTranslations.pulledAt - (new Date()) < 86400;
+        return this.translations.pulledAt - (new Date()) < this.cacheDuration;
     }
 
-    _pull() {
-        
+    pull() {
+        return new Promise((resolve, reject) => {
+            const defaultTranslations = await this.pullDefaultLanguage();
+            const fallbackTranslations = await this.pullFallbackLanguage();
+
+            this.save(defaultTranslations, fallbackTranslations);
+            resolve();
+        });
     }
 
-    _save(defaultTranslations, fallbackTranslations) {
-
+    pullDefaultLanguage() {
+        return this.gateway.pull(this.defaultLanguage);
     }
 
-    _merge(defaultTranslations, fallbackTranslations) {
-
+    pullFallbackLanguage() {
+        return this.gateway.pull(this.fallbackLanguage);
     }
 
-    _findTranslation() {
-
+    save(defaultTranslations, fallbackTranslations) {
+        this.translations = this.merge(defaultTranslations, fallbackTranslations);
+        localStorage.setItem('translations', this.translations);
     }
 
-    set defaultLanguage(defaultLanguage) {
-        this._defaultLanguage = defaultLanguage;
+    merge(defaultTranslations, fallbackTranslations) {
+        return Object.assign({}, fallbackTranslations, defaultTranslations);
     }
 
-    set fallbackLanguage(fallbackLanguage) {
-        this._fallbackLanguage = fallbackLanguage;
-    }
-    
-    set cacheDuration(cacheDuration) {
-        this._cacheDuration = cacheDuration;
-    }
+    findTranslation(key) {
+        const translation = this.translations[key];
 
-    set gateway(gateway) {
-        this._gateway = gateway;
+        return translation !== undefined ? translation : key;
     }
 }

@@ -1,23 +1,25 @@
 export default class Gateway {
     constructor() {
-        this._baseUrl = '';
-        this._namespace = '';
+        this.baseUrl = '';
+        this.namespace = '';
     }
 
     pull(lang) {
-        return fetch(this._generateUrl(lang))
+        return fetch(this.generateUrl(lang))
             .then(result => result.json());
     }
 
-    _generateUrl(lang) {
-        return `${this._baseUrl}api/i18n-string?namespace=${this._namespace}&perPage=100000?lang=${lang}`;
+    generateUrl(lang) {
+        return `${this.baseUrl}/api/i18n-string?namespace=${this.namespace}&perPage=100000?lang=${lang}`;
     }
 
     set baseUrl(baseUrl) {
-        this._baseUrl = baseUrl;
-    }
+        const lastCharacter = baseUrl.substr(baseUrl.length - 1);
 
-    set namespace(namespace) {
-        this._namespace = namespace;
+        if(lastCharacter) {
+            baseUrl = baseUrl.substr(0, baseUrl.length - 1);
+        }
+        
+        this.baseUrl = baseUrl;
     }
 }
