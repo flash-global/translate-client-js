@@ -25,18 +25,18 @@ export default class Manager {
 
     checkPullNeeded() {
         if (this.translations === null) {
-            return false;
+            return true;
         }
 
         if (!(this.translations.pulledAt instanceof Date)) {
-            return false;
+            return true;
         }
 
-        return this.translations.pulledAt - (new Date()) < this.cacheDuration;
+        return this.translations.pulledAt - (new Date()) >= this.cacheDuration;
     }
 
     pull() {
-        return new Promise((resolve, reject) => {
+        return new Promise(async (resolve, reject) => {
             const defaultTranslations = await this.pullDefaultLanguage();
             const fallbackTranslations = await this.pullFallbackLanguage();
 

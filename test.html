@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+
+        <title>Test</title>
+    </head>
+    <body>
+        <script src="build/translate.js"></script>
+        <script>
+            let translate = new Translate({
+                baseUrl: 'http://translate.test.flash-global.net/',
+                defaultLanguage: 'en_GB',
+                fallbackLanguage: 'fr_FR',
+                namespace: '/pricer',
+                cacheDuration: 0
+            });
+        </script>
+    </body>
+</html>

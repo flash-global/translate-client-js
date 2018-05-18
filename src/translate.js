@@ -7,8 +7,8 @@ class Translate {
     constructor(config) {
         this.defaultConfig = {
             baseUrl: '',
-            defaultLanguage: 'frFR',
-            fallbackLanguage: 'enGB',
+            defaultLanguage: 'fr_FR',
+            fallbackLanguage: 'en_GB',
             namespace: '',
             cacheDuration: 86400
         };
@@ -16,7 +16,7 @@ class Translate {
         this.config = {};
         this.manager = null;
 
-        this.mergeConfig();
+        this.mergeConfig(config);
         this.initManager();
     }
 
@@ -32,3 +32,5 @@ class Translate {
         this.manager = managerFactory(this.config);
     }
 }
+
+global.Translate = Translate;

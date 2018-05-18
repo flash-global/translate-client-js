@@ -1,6 +1,6 @@
 export default class Gateway {
     constructor() {
-        this.baseUrl = '';
+        this.translateBaseUrl = '';
         this.namespace = '';
     }
 
@@ -10,16 +10,16 @@ export default class Gateway {
     }
 
     generateUrl(lang) {
-        return `${this.baseUrl}/api/i18n-string?namespace=${this.namespace}&perPage=100000?lang=${lang}`;
+        return `${this.translateBaseUrl}/api/i18n-string?namespace=${this.namespace}&perPage=100000&lang=${lang}`;
     }
 
-    set baseUrl(baseUrl) {
-        const lastCharacter = baseUrl.substr(baseUrl.length - 1);
+    set baseUrl(translateBaseUrl) {
+        const lastCharacter = translateBaseUrl.substr(translateBaseUrl.length - 1);
 
         if(lastCharacter) {
-            baseUrl = baseUrl.substr(0, baseUrl.length - 1);
+            translateBaseUrl = translateBaseUrl.substr(0, translateBaseUrl.length - 1);
         }
         
-        this.baseUrl = baseUrl;
+        this.translateBaseUrl = translateBaseUrl;
     }
 }
