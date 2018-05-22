@@ -28,7 +28,7 @@ class Translate
 
     /**
      * @param {String} key
-     * @returns {String}
+     * @returns {Promise<String, Error>}
      */
     translate(key)
     {
