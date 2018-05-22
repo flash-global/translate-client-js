@@ -1,10 +1,11 @@
-import * as gatewayFactoryMock from '../../src/Factory/gatewayFactory';
+import gatewayFactory from '../../src/Factory/gatewayFactory';
 import managerFactory from '../../src/Factory/managerFactory';
 import Manager from '../../src/Service/manager';
 import Gateway from '../../src/Service/gateway';
 
 jest.mock('../../src/Service/manager');
 jest.mock('../../src/Service/gateway');
+jest.mock('../../src/Factory/gatewayFactory');
 
 let gatewayMock = null;
 
@@ -13,8 +14,7 @@ beforeEach(() => {
 
     gatewayMock = new Gateway();
 
-    gatewayFactoryMock.default = jest.fn();
-    gatewayFactoryMock.default.mockReturnValueOnce(gatewayMock);
+    gatewayFactory.mockReturnValueOnce(gatewayMock);
 });
 
 

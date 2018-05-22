@@ -1,9 +1,6 @@
-import 'babel-polyfill';
-import 'whatwg-fetch';
-
 import managerFactory from './Factory/managerFactory';
 
-class Translate
+export default class Translate
 {
     /**
      * @param {Object} config
@@ -46,8 +43,6 @@ class Translate
     initManager()
     {
         this.manager = managerFactory(this.config);
+        this.manager.init();
     }
 }
-
-export default Translate;
-global.Translate = Translate;

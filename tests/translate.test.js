@@ -1,8 +1,9 @@
-import * as managerFactoryMock from '../src/Factory/managerFactory';
+import managerFactory from '../src/Factory/managerFactory';
 import Translate from '../src/translate';
 import Manager from '../src/Service/manager';
 
 jest.mock('../src/Service/manager');
+jest.mock('../src/Factory/managerFactory');
 
 let managerMock = null;
 
@@ -10,9 +11,8 @@ beforeEach(() => {
     Manager.mockClear();
 
     managerMock = new Manager();
-
-    managerFactoryMock.default = jest.fn();
-    managerFactoryMock.default.mockReturnValueOnce(managerMock);
+    
+    managerFactory.mockReturnValueOnce(managerMock);
 });
 
 it('Test call constructor', () => {
@@ -29,10 +29,14 @@ it('Test call constructor', () => {
         localStorageKey: 'translations'
     };
 
+    managerMock.init = jest.fn();
+
     const translate = new Translate(fixtureConfig);
 
-    expect(managerFactoryMock.default).toHaveBeenCalledWith(expectedConfig);
-    expect(managerFactoryMock.default).toHaveBeenCalledTimes(1);
+    expect(managerMock.init).toHaveBeenCalledTimes(1);
+
+    expect(managerFactory).toHaveBeenCalledWith(expectedConfig);
+    expect(managerFactory).toHaveBeenCalledTimes(1);
 
     expect(translate.config).toEqual(expectedConfig);
     expect(translate.manager).toBe(managerMock);

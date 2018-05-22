@@ -9,6 +9,11 @@ export default class Manager
         this.cacheDuration = 0;
         this.gateway = null;
         this.localStorageKey = '';
+        this.translations = null;
+    }
+
+    init()
+    {
         this.translations = this.getLocalStorageTranslations();
     }
 
@@ -57,7 +62,7 @@ export default class Manager
         try {
             const translations = JSON.parse(jsonTranslations);
 
-            if(typeof translations !== 'object') {
+            if(translations === null || typeof translations !== 'object') {
                 return null;
             }
 
