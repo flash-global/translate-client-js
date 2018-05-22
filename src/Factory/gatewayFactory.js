@@ -1,6 +1,11 @@
 import Gateway from "../Service/gateway";
 
-export default function(config) {
+/**
+ * @param {Object} config
+ * @returns {Gateway}
+ */
+export default function(config)
+{
     const gateway = new Gateway();
 
     gateway.baseUrl = config.baseUrl;

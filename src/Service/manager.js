@@ -1,7 +1,9 @@
 import parser from './parser';
 
-export default class Manager {
-    constructor() {
+export default class Manager
+{
+    constructor()
+    {
         this.defaultLanguage = '';
         this.fallbackLanguage = '';
         this.cacheDuration = 0;
@@ -10,11 +12,21 @@ export default class Manager {
         this.translations = this.getLocalStorageTranslations();
     }
 
-    translate(key) {
-        return this.pullIfNeefed().then(() => this.findTranslation(key));
+    /**
+     * @param {String} key
+     * @returns {Promise<String,Error>}
+     */
+    translate(key)
+    {
+        return this.pullIfNeeded().then(() => this.findTranslation(key));
     }
 
-    pullIfNeefed() {
+    /**
+     *
+     * @returns {Promise<undefined,Error>}
+     */
+    pullIfNeeded()
+    {
         if (this.checkPullNeeded()) {
             return this.pull();
         }
@@ -22,21 +34,30 @@ export default class Manager {
         return new Promise(resolve => resolve());
     }
 
-    getLocalStorageTranslations() {
+    /**
+     * @returns {null|Object}
+     */
+    getLocalStorageTranslations()
+    {
         const jsonTranslations = localStorage.getItem(this.localStorageKey);
 
-        if(typeof jsonTranslations !== String) {
+        if(typeof jsonTranslations !== 'string') {
             return null;
         }
 
         return this.parseJsonTranslations(jsonTranslations);
     }
 
-    parseJsonTranslations(jsonTranslations) {
+    /**
+     * @param {String} jsonTranslations
+     * @returns {null|Object}
+     */
+    parseJsonTranslations(jsonTranslations)
+    {
         try {
             const translations = JSON.parse(jsonTranslations);
 
-            if(typeof translations !== Object) {
+            if(typeof translations !== 'object') {
                 return null;
             }
 
@@ -46,7 +67,11 @@ export default class Manager {
         }
     }
 
-    checkPullNeeded() {
+    /**
+     * @returns {Boolean}
+     */
+    checkPullNeeded()
+    {
         if (this.translations === null) {
             return true;
         }
@@ -58,30 +83,59 @@ export default class Manager {
         return this.translations.pulledAt - (new Date()) >= this.cacheDuration;
     }
 
-    pull() {
+    /**
+     * @returns {Promise<undefined,Error>}
+     */
+    pull()
+    {
         return new Promise(async (resolve, reject) => {
-            const defaultTranslations = await this.pullLanguage(this.defaultLanguage);
-            const fallbackTranslations = await this.pullLanguage(this.fallbackLanguage);
+            try {
+                const defaultTranslations = await this.pullLanguage(this.defaultLanguage);
+                const fallbackTranslations = await this.pullLanguage(this.fallbackLanguage);
 
-            this.save(defaultTranslations, fallbackTranslations);
-            resolve();
+                this.save(defaultTranslations, fallbackTranslations);
+                resolve();
+            } catch(exception) {
+                reject(exception);
+            }
         });
     }
 
-    pullLanguage(language) {
+    /**
+     * @param {String} language
+     * @returns {Promise<Array,Error>}
+     */
+    pullLanguage(language)
+    {
         return this.gateway.pull(language).then(translations => parser(translations));
     }
 
-    save(defaultTranslations, fallbackTranslations) {
+    /**
+     * @param {Object} defaultTranslations
+     * @param {Object} fallbackTranslations
+     */
+    save(defaultTranslations, fallbackTranslations)
+    {
         this.translations = this.merge(defaultTranslations, fallbackTranslations);
         localStorage.setItem(this.localStorageKey, JSON.stringify(this.translations));
     }
 
-    merge(defaultTranslations, fallbackTranslations) {
+    /**
+     * @param {Object} defaultTranslations
+     * @param {Object} fallbackTranslations
+     * @returns {Object}
+     */
+    merge(defaultTranslations, fallbackTranslations)
+    {
         return Object.assign({pulledAt: new Date()}, fallbackTranslations, defaultTranslations);
     }
 
-    findTranslation(key) {
+    /**
+     * @param {String} key
+     * @returns {String}
+     */
+    findTranslation(key)
+    {
         const translation = this.translations[key];
 
         return translation !== undefined ? translation : key;

@@ -1,19 +1,44 @@
-export default class Gateway {
-    constructor() {
+export default class Gateway
+{
+    constructor()
+    {
         this.translateBaseUrl = '';
         this.namespace = '';
     }
 
-    pull(lang) {
+    /**
+     * @param {String} lang
+     * @returns {Promise<Array,Error>}
+     */
+    pull(lang)
+    {
         return fetch(this.generateUrl(lang))
-            .then(result => result.json());
+            .then(response => {
+                const contentType = response.headers.get("content-type");
+
+                if(contentType && contentType.indexOf('application/json') !== -1) {
+                    return response;
+                }
+
+                throw new Error('Response type not json');
+            })
+            .then(response => response.json());
     }
 
-    generateUrl(lang) {
+    /**
+     * @param {String} lang
+     * @returns {String}
+     */
+    generateUrl(lang)
+    {
         return `${this.translateBaseUrl}/api/i18n-string?namespace=${this.namespace}&perPage=100000&lang=${lang}`;
     }
 
-    set baseUrl(translateBaseUrl) {
+    /**
+     * @param {String} translateBaseUrl
+     */
+    set baseUrl(translateBaseUrl)
+    {
         const lastCharacter = translateBaseUrl.substr(translateBaseUrl.length - 1);
 
         if(lastCharacter) {

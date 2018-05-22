@@ -3,8 +3,13 @@ import 'whatwg-fetch';
 
 import managerFactory from './Factory/managerFactory';
 
-class Translate {
-    constructor(config) {
+class Translate
+{
+    /**
+     * @param {Object} config
+     */
+    constructor(config)
+    {
         this.defaultConfig = {
             baseUrl: '',
             defaultLanguage: 'fr_FR',
@@ -21,15 +26,25 @@ class Translate {
         this.initManager();
     }
 
-    translate(key) {
+    /**
+     * @param {String} key
+     * @returns {String}
+     */
+    translate(key)
+    {
         return this.manager.translate(key);
     }
 
-    mergeConfig(config) {
+    /**
+     * @param {Object} config
+     */
+    mergeConfig(config)
+    {
         Object.assign(this.config, this.defaultConfig, config);
     }
 
-    initManager() {
+    initManager()
+    {
         this.manager = managerFactory(this.config);
     }
 }
