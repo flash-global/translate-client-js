@@ -18,10 +18,10 @@ export default class Gateway
                     return response;
                 }
 
-                throw new Error('Response code not 200');
+                throw new Error('Response status code not 200');
             })
             .then(response => {
-                const contentType = response.headers.get("content-type");
+                const contentType = response.headers.get("Content-Type");
 
                 if(contentType && contentType.indexOf('application/json') !== -1) {
                     return response;
@@ -48,7 +48,7 @@ export default class Gateway
     {
         const lastCharacter = translateBaseUrl.substr(translateBaseUrl.length - 1);
 
-        if(lastCharacter) {
+        if(lastCharacter === '/') {
             translateBaseUrl = translateBaseUrl.substr(0, translateBaseUrl.length - 1);
         }
         
