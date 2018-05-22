@@ -19,7 +19,7 @@
   "scripts": {
     "dev": "webpack --mode development --watch --devtool='source-map'",
     "dist": "webpack --mode production",
-    "test": "jest"
+    "tests": "jest"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",

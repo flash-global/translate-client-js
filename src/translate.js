@@ -49,4 +49,5 @@ class Translate
     }
 }
 
+export default Translate;
 global.Translate = Translate;

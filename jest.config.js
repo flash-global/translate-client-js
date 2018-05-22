@@ -1,4 +1,5 @@
 module.exports = {
     verbose: true,
-    testMatch: ['**/test/**/*.test.js']
+    testMatch: ['**/tests/**/*.test.js'],
+    collectCoverage: true
 };
