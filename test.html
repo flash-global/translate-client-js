@@ -11,10 +11,11 @@
         <script>
             let translate = new Translate({
                 baseUrl: 'http://translate.test.flash-global.net/',
-                defaultLanguage: 'en_GB',
+                defaultLanguage: 'en_US',
                 fallbackLanguage: 'fr_FR',
                 namespace: '/pricer',
-                cacheDuration: 0
+                cacheDuration: 3600 * 24,
+                localStorageKey: 'translations'
             });
         </script>
     </body>

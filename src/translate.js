@@ -10,7 +10,8 @@ class Translate {
             defaultLanguage: 'fr_FR',
             fallbackLanguage: 'en_GB',
             namespace: '',
-            cacheDuration: 86400
+            cacheDuration: 86400,
+            localStorageKey: 'translations'
         };
 
         this.config = {};

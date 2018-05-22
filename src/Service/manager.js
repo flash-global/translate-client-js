@@ -1,10 +1,13 @@
+import parser from './parser';
+
 export default class Manager {
     constructor() {
         this.defaultLanguage = '';
         this.fallbackLanguage = '';
         this.cacheDuration = 0;
         this.gateway = null;
-        this.translations = localStorage.getItem('translations');
+        this.localStorageKey = '';
+        this.translations = this.getLocalStorageTranslations();
     }
 
     translate(key) {
@@ -12,15 +15,35 @@ export default class Manager {
     }
 
     pullIfNeefed() {
-        return new Promise((resolve, reject) => {
-            if (this.checkPullNeeded()) {
-                this.pull()
-                    .then(() => resolve())
-                    .catch(() => reject());
-            } else {
-                resolve();
+        if (this.checkPullNeeded()) {
+            return this.pull();
+        }
+
+        return new Promise(resolve => resolve());
+    }
+
+    getLocalStorageTranslations() {
+        const jsonTranslations = localStorage.getItem(this.localStorageKey);
+
+        if(typeof jsonTranslations !== String) {
+            return null;
+        }
+
+        return this.parseJsonTranslations(jsonTranslations);
+    }
+
+    parseJsonTranslations(jsonTranslations) {
+        try {
+            const translations = JSON.parse(jsonTranslations);
+
+            if(typeof translations !== Object) {
+                return null;
             }
-        });
+
+            return translations;
+        } catch(exception) {
+            return null;
+        }
     }
 
     checkPullNeeded() {
@@ -37,29 +60,25 @@ export default class Manager {
 
     pull() {
         return new Promise(async (resolve, reject) => {
-            const defaultTranslations = await this.pullDefaultLanguage();
-            const fallbackTranslations = await this.pullFallbackLanguage();
+            const defaultTranslations = await this.pullLanguage(this.defaultLanguage);
+            const fallbackTranslations = await this.pullLanguage(this.fallbackLanguage);
 
             this.save(defaultTranslations, fallbackTranslations);
             resolve();
         });
     }
 
-    pullDefaultLanguage() {
-        return this.gateway.pull(this.defaultLanguage);
-    }
-
-    pullFallbackLanguage() {
-        return this.gateway.pull(this.fallbackLanguage);
+    pullLanguage(language) {
+        return this.gateway.pull(language).then(translations => parser(translations));
     }
 
     save(defaultTranslations, fallbackTranslations) {
         this.translations = this.merge(defaultTranslations, fallbackTranslations);
-        localStorage.setItem('translations', this.translations);
+        localStorage.setItem(this.localStorageKey, JSON.stringify(this.translations));
     }
 
     merge(defaultTranslations, fallbackTranslations) {
-        return Object.assign({}, fallbackTranslations, defaultTranslations);
+        return Object.assign({pulledAt: new Date()}, fallbackTranslations, defaultTranslations);
     }
 
     findTranslation(key) {

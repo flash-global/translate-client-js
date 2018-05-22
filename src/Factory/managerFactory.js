@@ -8,6 +8,7 @@ export default function(config) {
     manager.defaultLanguage = config.defaultLanguage;
     manager.fallbackLanguage = config.fallbackLanguage;
     manager.cacheDuration = config.cacheDuration;
+    manager.localStorageKey = config.localStorageKey;
 
     return manager;
 }
