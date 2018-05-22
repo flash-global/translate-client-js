@@ -1,0 +1,10 @@
+{
+  "presets": [
+    ["env", {
+      "targets": {
+        "ie": 6
+      },
+      "useBuiltIns": true
+    }]
+  ]
+}
