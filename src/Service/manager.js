@@ -94,9 +94,10 @@ export default class Manager
                 const fallbackTranslations = await this.pullLanguage(this.fallbackLanguage);
 
                 this.save(defaultTranslations, fallbackTranslations);
+
                 resolve();
-            } catch(exception) {
-                reject(exception);
+            } catch(error) {
+                reject(error);
             }
         });
     }
