@@ -1,16 +1,16 @@
 const path = require('path');
 const webpack = require('webpack');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 module.exports = {
     entry: ['./src/translate.js'],
     output:  {
-        path: path.resolve(__dirname, 'build'),
+        path: path.resolve(__dirname, 'dist'),
         filename: 'translate.js'
     },
     watchOptions: {
         poll: true
     },
-    devtool: 'source-map',
     module: {
         rules: [
             {
@@ -31,5 +31,8 @@ module.exports = {
                 }
             }
         ]
-    }
+    },
+    plugins: [
+        new CleanWebpackPlugin(['dist']),
+    ]
 };
