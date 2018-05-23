@@ -85,7 +85,7 @@ export default class Manager
             return true;
         }
 
-        return this.translations.pulledAt - (new Date()) >= this.cacheDuration;
+        return ((new Date()) - this.translations.pulledAt) / 1000 >= this.cacheDuration;
     }
 
     /**

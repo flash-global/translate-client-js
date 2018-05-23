@@ -1,9 +1,59 @@
 import Manager from '../../src/Service/manager';
 import Gateway from '../../src/Service/gateway';
-import parser from '../../src/Service/parser';
 
 jest.mock('../../src/Service/gateway');
-jest.mock('../../src/Service/parser');
+
+const fixtureDefaultI18nTranslations = [
+    {
+        content: "This is the first translation",
+        created_at: "2018-01-01 01:01:01",
+        id: "1",
+        key: "translation1",
+        lang: "en_US",
+        namespace: "/test"
+    },
+    {
+        content: "This is the second translation",
+        created_at: "2018-02-02 02:02:02",
+        id: "2",
+        key: "translation2",
+        lang: "en_US",
+        namespace: "/test"
+    }
+];
+
+const fixtureFallbackI18nTranslations = [
+    {
+        content: "C'est la première traduction",
+        created_at: "2018-01-01 01:01:01",
+        id: "3",
+        key: "translation1",
+        lang: "fr_FR",
+        namespace: "/test"
+    },
+    {
+        content: "C'est la seconde traduction",
+        created_at: "2018-02-02 02:02:02",
+        id: "4",
+        key: "translation2",
+        lang: "fr_FR",
+        namespace: "/test"
+    },
+    {
+        content: "C'est la troisième traduction",
+        created_at: "2018-03-03 03:03:03",
+        id: "5",
+        key: "translation3",
+        lang: "fr_FR",
+        namespace: "/test"
+    }
+];
+
+const fixtureTranslations = {
+    "translation1": "This is the first translation",
+    "translation2": "This is the second translation",
+    "translation3": "C'est la troisième traduction"
+};
 
 it('Test constructor', () => {
     const manager = new Manager();
@@ -64,4 +114,121 @@ it('Test init result success get saved translations', () => {
     expect(manager.translations).toEqual(fixtureTranslations);
     expect(global.localStorage.getItem).toHaveBeenCalledWith('key');
     expect(global.localStorage.getItem).toHaveBeenCalledTimes(1);
+});
+
+it('Test translate will pull because there is not saved translate', () => {
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.gateway = gatewayMock;
+
+    const promiseDefaultTranslations = new Promise(resolve => resolve(fixtureDefaultI18nTranslations));
+    const promiseFallbackTranslations = new Promise(resolve => resolve(fixtureFallbackI18nTranslations));
+
+    global.localStorage = {
+        setItem: jest.fn()
+    };
+
+    gatewayMock.pull
+        .mockReturnValueOnce(promiseDefaultTranslations)
+        .mockReturnValueOnce(promiseFallbackTranslations);
+
+    manager.translate('translation1')
+        .then(result => {
+            expect(result).toEqual("This is the first translation");
+
+            expect(gatewayMock.pull.mock.calls).toEqual([
+                ['en_US'],
+                ['fr_FR']
+            ]);
+            expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+
+            const savedTranslations = JSON.parse(global.localStorage.setItem.mock.calls[0][1]);
+            delete savedTranslations.pulledAt;
+
+            expect(savedTranslations).toEqual(fixtureTranslations);
+        })
+        .catch(error => console.log(error));
+});
+
+it('Test translate will pull because saved translations are outdated', () => {
+    const fixturePulledAt = new Date();
+    fixturePulledAt.setDate(fixturePulledAt.getDate() - 1.1);
+
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.gateway = gatewayMock;
+    manager.cacheDuration = 3600 * 24;
+    manager.translations = Object.assign({pulledAt: fixturePulledAt}, fixtureTranslations);
+
+    const promiseDefaultTranslations = new Promise(resolve => resolve(fixtureDefaultI18nTranslations));
+    const promiseFallbackTranslations = new Promise(resolve => resolve(fixtureFallbackI18nTranslations));
+
+    global.localStorage = {
+        setItem: jest.fn()
+    };
+
+    gatewayMock.pull
+        .mockReturnValueOnce(promiseDefaultTranslations)
+        .mockReturnValueOnce(promiseFallbackTranslations);
+
+    manager.translate('translation1')
+        .then(result => {
+            expect(result).toEqual("This is the first translation");
+
+            expect(gatewayMock.pull.mock.calls).toEqual([
+                ['en_US'],
+                ['fr_FR']
+            ]);
+            expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+
+            const savedTranslations = JSON.parse(global.localStorage.setItem.mock.calls[0][1]);
+            delete savedTranslations.pulledAt;
+
+            expect(savedTranslations).toEqual(fixtureTranslations);
+        })
+        .catch(error => console.log(error));
+});
+
+it('Test translate will not pull new translations', () => {
+    const fixturePulledAt = new Date();
+    fixturePulledAt.setDate(fixturePulledAt.getDate() - 0.5);
+
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.gateway = gatewayMock;
+    manager.cacheDuration = 3600 * 24;
+    manager.translations = Object.assign({pulledAt: fixturePulledAt}, fixtureTranslations);
+
+    const promiseDefaultTranslations = new Promise(resolve => resolve(fixtureDefaultI18nTranslations));
+    const promiseFallbackTranslations = new Promise(resolve => resolve(fixtureFallbackI18nTranslations));
+
+    global.localStorage = {
+        setItem: jest.fn()
+    };
+
+    gatewayMock.pull
+        .mockReturnValueOnce(promiseDefaultTranslations)
+        .mockReturnValueOnce(promiseFallbackTranslations);
+
+    manager.translate('translation1')
+        .then(result => {
+            expect(result).toEqual("This is the first translation");
+            expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
+        })
+        .catch(error => console.log(error));
 });
