@@ -45,4 +45,18 @@ export default class Translate
         this.manager = managerFactory(this.config);
         this.manager.init();
     }
+
+    set defaultLanguage(defaultLanguage)
+    {
+        this.config.defaultLanguage = defaultLanguage;
+        this.manager.defaultLanguage = defaultLanguage;
+        this.manager.init();
+    }
+
+    set fallbackLanguage(fallbackLanguage)
+    {
+        this.config.fallbackLanguage = fallbackLanguage;
+        this.manager.fallbackLanguage = fallbackLanguage;
+        this.manager.init();
+    }
 }

@@ -56,3 +56,25 @@ it('Test call translate', () => {
     expect(managerMock.translate).toHaveBeenCalledWith(fixtureKey);
     expect(managerMock.translate).toHaveBeenCalledTimes(1);
 });
+
+it('Test set defaultLanguage', () => {
+    const translate = new Translate({});
+
+    managerMock.init = jest.fn();
+
+    translate.defaultLanguage = 'en_GB';
+
+    expect(translate.config.defaultLanguage).toEqual('en_GB');
+    expect(managerMock.init).toHaveBeenCalledTimes(1);
+});
+
+it('Test set fallbackLanguage', () => {
+    const translate = new Translate({});
+
+    managerMock.init = jest.fn();
+
+    translate.fallbackLanguage = 'en_FR';
+
+    expect(translate.config.fallbackLanguage).toEqual('en_FR');
+    expect(managerMock.init).toHaveBeenCalledTimes(1);
+});

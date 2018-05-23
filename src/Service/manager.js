@@ -44,7 +44,7 @@ export default class Manager
      */
     getLocalStorageTranslations()
     {
-        const jsonTranslations = localStorage.getItem(this.localStorageKey);
+        const jsonTranslations = localStorage.getItem(this.buildStorageKey());
 
         if(typeof jsonTranslations !== 'string') {
             return null;
@@ -127,7 +127,8 @@ export default class Manager
     save(defaultTranslations, fallbackTranslations)
     {
         this.translations = this.merge(defaultTranslations, fallbackTranslations);
-        localStorage.setItem(this.localStorageKey, JSON.stringify(this.translations));
+
+        localStorage.setItem(this.buildStorageKey(), JSON.stringify(this.translations));
     }
 
     /**
@@ -149,5 +150,13 @@ export default class Manager
         const translation = this.translations[key];
 
         return translation !== undefined ? translation : key;
+    }
+
+    /**
+     * @returns {string}
+     */
+    buildStorageKey()
+    {
+        return this.localStorageKey + '-' + this.defaultLanguage + '-' + this.fallbackLanguage;
     }
 }

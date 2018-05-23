@@ -69,6 +69,8 @@ it('Test constructor', () => {
 it('Test init result no translations because not stored on localStorage', () => {
     const manager = new Manager();
     manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
 
     global.localStorage = {
         getItem: jest.fn()
@@ -77,13 +79,15 @@ it('Test init result no translations because not stored on localStorage', () => 
     manager.init();
 
     expect(manager.translations).toEqual(null);
-    expect(global.localStorage.getItem).toHaveBeenCalledWith('key');
+    expect(global.localStorage.getItem).toHaveBeenCalledWith('key-en_US-fr_FR');
     expect(global.localStorage.getItem).toHaveBeenCalledTimes(1);
 });
 
 it('Test init result no translations because it is not a valid JSON', () => {
     const manager = new Manager();
     manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
 
     global.localStorage = {
         getItem: jest.fn()
@@ -94,7 +98,7 @@ it('Test init result no translations because it is not a valid JSON', () => {
     manager.init();
 
     expect(manager.translations).toEqual(null);
-    expect(global.localStorage.getItem).toHaveBeenCalledWith('key');
+    expect(global.localStorage.getItem).toHaveBeenCalledWith('key-en_US-fr_FR');
     expect(global.localStorage.getItem).toHaveBeenCalledTimes(1);
 });
 
@@ -103,6 +107,8 @@ it('Test init result success fetch saved translations', () => {
     const fixtureTranslations = {'no': 'Non', 'yes': 'Oui', pulledAt: fixtureDate.toISOString()};
     const manager = new Manager();
     manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
 
     global.localStorage = {
         getItem: jest.fn()
@@ -115,7 +121,7 @@ it('Test init result success fetch saved translations', () => {
     fixtureTranslations.pulledAt = fixtureDate;
 
     expect(manager.translations).toEqual(fixtureTranslations);
-    expect(global.localStorage.getItem).toHaveBeenCalledWith('key');
+    expect(global.localStorage.getItem).toHaveBeenCalledWith('key-en_US-fr_FR');
     expect(global.localStorage.getItem).toHaveBeenCalledTimes(1);
 });
 
