@@ -56,7 +56,7 @@ export default class Translate
     set fallbackLanguage(fallbackLanguage)
     {
         this.config.fallbackLanguage = fallbackLanguage;
-        this.manager.fallbackLanguage = defaultLanguage;
+        this.manager.fallbackLanguage = fallbackLanguage;
         this.manager.init();
     }
 }

@@ -73,8 +73,8 @@ it('Test set fallbackLanguage', () => {
 
     managerMock.init = jest.fn();
 
-    translate.defaultLanguage = 'en_FR';
+    translate.fallbackLanguage = 'en_FR';
 
-    expect(translate.config.defaultLanguage).toEqual('en_FR');
+    expect(translate.config.fallbackLanguage).toEqual('en_FR');
     expect(managerMock.init).toHaveBeenCalledTimes(1);
 });
