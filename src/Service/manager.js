@@ -1,9 +1,7 @@
 import parser from './parser';
 
-export default class Manager
-{
-    constructor()
-    {
+export default class Manager {
+    constructor() {
         this.defaultLanguage = '';
         this.fallbackLanguage = '';
         this.cacheDuration = 0;
@@ -12,17 +10,20 @@ export default class Manager
         this.translations = null;
     }
 
-    init()
-    {
+    init() {
         this.translations = this.getLocalStorageTranslations();
+    }
+
+    reset() {
+        localStorage.removeItem(this.localStorageKey);
+        this.translations = null;
     }
 
     /**
      * @param {String} key
      * @returns {Promise<String,Error>}
      */
-    translate(key)
-    {
+    translate(key) {
         return this.pullIfNeeded().then(() => this.findTranslation(key));
     }
 
@@ -30,8 +31,7 @@ export default class Manager
      *
      * @returns {Promise<undefined,Error>}
      */
-    pullIfNeeded()
-    {
+    pullIfNeeded() {
         if (this.checkPullNeeded()) {
             return this.pull();
         }
@@ -42,11 +42,10 @@ export default class Manager
     /**
      * @returns {null|Object}
      */
-    getLocalStorageTranslations()
-    {
-        const jsonTranslations = localStorage.getItem(this.buildStorageKey());
+    getLocalStorageTranslations() {
+        const jsonTranslations = localStorage.getItem(this.localStorageKey);
 
-        if(typeof jsonTranslations !== 'string') {
+        if (typeof jsonTranslations !== 'string') {
             return null;
         }
 
@@ -57,21 +56,20 @@ export default class Manager
      * @param {String} jsonTranslations
      * @returns {null|Object}
      */
-    parseJsonTranslations(jsonTranslations)
-    {
+    parseJsonTranslations(jsonTranslations) {
         try {
             const translations = JSON.parse(jsonTranslations);
 
-            if(translations === null || typeof translations !== 'object') {
+            if (translations === null || typeof translations !== 'object') {
                 return null;
             }
 
-            if(translations.pulledAt !== undefined) {
+            if (translations.pulledAt !== undefined) {
                 translations.pulledAt = new Date(translations.pulledAt);
             }
 
             return translations;
-        } catch(exception) {
+        } catch (exception) {
             return null;
         }
     }
@@ -79,8 +77,7 @@ export default class Manager
     /**
      * @returns {Boolean}
      */
-    checkPullNeeded()
-    {
+    checkPullNeeded() {
         if (this.translations === null) {
             return true;
         }
@@ -95,8 +92,7 @@ export default class Manager
     /**
      * @returns {Promise<undefined,Error>}
      */
-    pull()
-    {
+    pull() {
         return new Promise(async (resolve, reject) => {
             try {
                 const defaultTranslations = await this.pullLanguage(this.defaultLanguage);
@@ -105,7 +101,7 @@ export default class Manager
                 this.save(defaultTranslations, fallbackTranslations);
 
                 resolve();
-            } catch(error) {
+            } catch (error) {
                 reject(error);
             }
         });
@@ -115,8 +111,7 @@ export default class Manager
      * @param {String} language
      * @returns {Promise<Array,Error>}
      */
-    pullLanguage(language)
-    {
+    pullLanguage(language) {
         return this.gateway.pull(language).then(translations => parser(translations));
     }
 
@@ -124,11 +119,10 @@ export default class Manager
      * @param {Object} defaultTranslations
      * @param {Object} fallbackTranslations
      */
-    save(defaultTranslations, fallbackTranslations)
-    {
+    save(defaultTranslations, fallbackTranslations) {
         this.translations = this.merge(defaultTranslations, fallbackTranslations);
 
-        localStorage.setItem(this.buildStorageKey(), JSON.stringify(this.translations));
+        localStorage.setItem(this.localStorageKey, JSON.stringify(this.translations));
     }
 
     /**
@@ -136,27 +130,23 @@ export default class Manager
      * @param {Object} fallbackTranslations
      * @returns {Object}
      */
-    merge(defaultTranslations, fallbackTranslations)
-    {
-        return Object.assign({pulledAt: new Date()}, fallbackTranslations, defaultTranslations);
+    merge(defaultTranslations, fallbackTranslations) {
+        return Object.assign(
+            {
+                pulledAt: new Date(),
+            },
+            fallbackTranslations,
+            defaultTranslations,
+        );
     }
 
     /**
      * @param {String} key
      * @returns {String}
      */
-    findTranslation(key)
-    {
+    findTranslation(key) {
         const translation = this.translations[key];
 
         return translation !== undefined ? translation : key;
-    }
-
-    /**
-     * @returns {string}
-     */
-    buildStorageKey()
-    {
-        return this.localStorageKey + '-' + this.defaultLanguage + '-' + this.fallbackLanguage;
     }
 }
