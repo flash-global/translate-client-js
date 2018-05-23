@@ -152,6 +152,9 @@ export default class Manager
         return translation !== undefined ? translation : key;
     }
 
+    /**
+     * @returns {string}
+     */
     buildStorageKey()
     {
         return this.localStorageKey + '-' + this.defaultLanguage + '-' + this.fallbackLanguage;
