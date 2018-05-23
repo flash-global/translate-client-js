@@ -66,6 +66,10 @@ export default class Manager
                 return null;
             }
 
+            if(translations.pulledAt !== undefined) {
+                translations.pulledAt = new Date(translations.pulledAt);
+            }
+
             return translations;
         } catch(exception) {
             return null;
