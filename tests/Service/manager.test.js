@@ -98,8 +98,9 @@ it('Test init result no translations because it is not a valid JSON', () => {
     expect(global.localStorage.getItem).toHaveBeenCalledTimes(1);
 });
 
-it('Test init result success get saved translations', () => {
-    const fixtureTranslations = {'no': 'Non', 'yes': 'Oui'};
+it('Test init result success fetch saved translations', () => {
+    const fixtureDate = new Date();
+    const fixtureTranslations = {'no': 'Non', 'yes': 'Oui', pulledAt: fixtureDate.toISOString()};
     const manager = new Manager();
     manager.localStorageKey = 'key';
 
@@ -110,6 +111,8 @@ it('Test init result success get saved translations', () => {
     global.localStorage.getItem.mockReturnValueOnce(JSON.stringify(fixtureTranslations));
 
     manager.init();
+
+    fixtureTranslations.pulledAt = fixtureDate;
 
     expect(manager.translations).toEqual(fixtureTranslations);
     expect(global.localStorage.getItem).toHaveBeenCalledWith('key');
@@ -213,17 +216,6 @@ it('Test translate will not pull new translations', () => {
     manager.gateway = gatewayMock;
     manager.cacheDuration = 3600 * 24;
     manager.translations = Object.assign({pulledAt: fixturePulledAt}, fixtureTranslations);
-
-    const promiseDefaultTranslations = new Promise(resolve => resolve(fixtureDefaultI18nTranslations));
-    const promiseFallbackTranslations = new Promise(resolve => resolve(fixtureFallbackI18nTranslations));
-
-    global.localStorage = {
-        setItem: jest.fn()
-    };
-
-    gatewayMock.pull
-        .mockReturnValueOnce(promiseDefaultTranslations)
-        .mockReturnValueOnce(promiseFallbackTranslations);
 
     manager.translate('translation1')
         .then(result => {

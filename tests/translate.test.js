@@ -23,7 +23,7 @@ it('Test call constructor', () => {
     const expectedConfig = {
         baseUrl: 'base-url',
         defaultLanguage: 'fr_FR',
-        fallbackLanguage: 'en_GB',
+        fallbackLanguage: 'en_US',
         namespace: '/namespace',
         cacheDuration: 86400,
         localStorageKey: 'translations'

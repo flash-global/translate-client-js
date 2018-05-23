@@ -10,7 +10,7 @@ export default class Translate
         this.defaultConfig = {
             baseUrl: '',
             defaultLanguage: 'fr_FR',
-            fallbackLanguage: 'en_GB',
+            fallbackLanguage: 'en_US',
             namespace: '',
             cacheDuration: 86400,
             localStorageKey: 'translations'

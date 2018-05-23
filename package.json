@@ -2,7 +2,7 @@
   "name": "translate-client-js",
   "version": "1.0.0",
   "description": "Translate client for javascript application",
-  "main": "src/client.js",
+  "main": "src/translate.js",
   "repository": "git@github.com:flash-global/translate-client-js.git",
   "author": "glickel <lickel.gaetan@gmail.com>",
   "license": "GPL-3.0",
