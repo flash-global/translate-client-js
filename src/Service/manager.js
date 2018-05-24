@@ -96,6 +96,11 @@ export default class Manager {
             return true;
         }
 
+        if (this.translations.defaultLanguage !== this.defaultLanguage ||
+            this.translations.fallbackLanguage !== this.fallbackLanguage) {
+            return true;
+        }
+
         return ((new Date()) - this.translations.pulledAt) / 1000 >= this.cacheDuration;
     }
 
@@ -144,6 +149,8 @@ export default class Manager {
         return Object.assign(
             {
                 pulledAt: new Date(),
+                defaultLanguage: this.defaultLanguage,
+                fallbackLanguage: this.fallbackLanguage,
             },
             fallbackTranslations,
             defaultTranslations,
