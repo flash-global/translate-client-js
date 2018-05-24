@@ -18,7 +18,6 @@ It's a javascript client to use translate api.
 
 ## How to install it and modify it
 
-- Clone the project
 - Execute command `yarn`
 - Generate development file: execute command `yarn dev` (result path: `dist/translate.js`) <br />
 It will keep a process to re-generate the file each times you change the sources
@@ -31,16 +30,16 @@ It will keep a process to re-generate the file each times you change the sources
 #### Without ES6 modules
 
 - Fetch the project files (download, clone, etc...)
-- Add a `<script>` to use file in `dist/translate.js`
+- Add a `<script>` to use file in `dist/translate-client.js`
 
 #### With ES6 modules
 
 - Fetch the project files (download, clone, etc...)
-- Import the client with `import Translate from 'translate-client-js''`
+- Import the client with `import TranslateClient from 'translate-client-js''`
 
 ### How to use it
 
-- Create a new instance of Translate with `var translateClient = new Translate(config)` <br />
+- Create a new instance of Translate with `var translateClient = new TranslateClient(config)` <br />
 Here is the default configuration : <br >
 ```
 {
