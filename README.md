@@ -64,3 +64,6 @@ translateClient.translate(key)
         console.log(error);
     });
 ```
+## TODO
+ - [] See if project if we register the project on npm
+ - [] Add colors on README schema
