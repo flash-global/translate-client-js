@@ -64,6 +64,7 @@ translateClient.translate(key)
         console.log(error);
     });
 ```
+- You can use `translateClient.translateMultiple(keys)` to translate an array of keys. It return the same type of promise as `translateClient.translate(key)`
 ## TODO
  - [] See if project if we register the project on npm
  - [] Add colors on README schema
