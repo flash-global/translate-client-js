@@ -1,5 +1,5 @@
 import managerFactory from '../src/Factory/managerFactory';
-import Translate from '../src/translate';
+import TranslateClient from '../src/translate-client';
 import Manager from '../src/Service/manager';
 
 jest.mock('../src/Service/manager');
@@ -31,7 +31,7 @@ it('Test call constructor', () => {
 
     managerMock.init = jest.fn();
 
-    const translate = new Translate(fixtureConfig);
+    const translate = new TranslateClient(fixtureConfig);
 
     expect(managerMock.init).toHaveBeenCalledTimes(1);
 
@@ -46,7 +46,7 @@ it('Test call translate', () => {
     const fixtureKey = 'key';
     const fixturePromise = new Promise(() => {});
 
-    const translate = new Translate({});
+    const translate = new TranslateClient({});
 
     managerMock.translate = jest.fn();
     managerMock.translate.mockReturnValueOnce(fixturePromise);
@@ -58,23 +58,23 @@ it('Test call translate', () => {
 });
 
 it('Test set defaultLanguage', () => {
-    const translate = new Translate({});
+    const translate = new TranslateClient({});
 
-    managerMock.init = jest.fn();
+    managerMock.reset = jest.fn();
 
     translate.defaultLanguage = 'en_GB';
 
     expect(translate.config.defaultLanguage).toEqual('en_GB');
-    expect(managerMock.init).toHaveBeenCalledTimes(1);
+    expect(managerMock.reset).toHaveBeenCalledTimes(1);
 });
 
 it('Test set fallbackLanguage', () => {
-    const translate = new Translate({});
+    const translate = new TranslateClient({});
 
-    managerMock.init = jest.fn();
+    managerMock.reset = jest.fn();
 
     translate.fallbackLanguage = 'en_FR';
 
     expect(translate.config.fallbackLanguage).toEqual('en_FR');
-    expect(managerMock.init).toHaveBeenCalledTimes(1);
+    expect(managerMock.reset).toHaveBeenCalledTimes(1);
 });

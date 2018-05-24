@@ -1,6 +1,6 @@
 import 'babel-polyfill';
 import 'whatwg-fetch';
 
-import Translate from '../src/translate';
+import TranslateClient from '../src/translate-client';
 
-global.Translate = Translate;
+global.TranslateClient = TranslateClient;

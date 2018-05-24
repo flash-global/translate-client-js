@@ -6,7 +6,7 @@ module.exports = (env, argv) => {
         entry: ['./build/bootstrap.js'],
         output:  {
             path: path.resolve(__dirname, 'dist'),
-            filename: 'translate.js'
+            filename: 'translate-client.js'
         },
         module: {
             rules: [

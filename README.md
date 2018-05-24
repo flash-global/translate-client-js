@@ -10,15 +10,15 @@ It's a javascript client to use translate api.
 
 ## Technical stack
 
-- ECMAScript 6 to use last functionalities like class, promise, async/await, etc...
-- Webpack to manage modules
-- Babel to compile the javascript to be compatible with old browsers
-- Tools executed with Node.js version 10
-- Packages managed with `yarn`
+- ECMAScript 6 to use last functionalities like class, promise, async/await, etc... [http://es6-features.org](http://es6-features.org)
+- Webpack to manage modules [https://webpack.js.org/](https://webpack.js.org/)
+- Babel to compile the javascript to be compatible with old browsers [https://babeljs.io/](https://babeljs.io/)
+- Tools executed with Node.js version 10 [https://nodejs.org/en/](https://nodejs.org/en/)
+- Packages managed with `yarn` [https://nodejs.org/en/](https://nodejs.org/en/)
+- ESLing to linting the code [https://eslint.org/](https://eslint.org/)
 
 ## How to install it and modify it
 
-- Clone the project
 - Execute command `yarn`
 - Generate development file: execute command `yarn dev` (result path: `dist/translate.js`) <br />
 It will keep a process to re-generate the file each times you change the sources
@@ -31,16 +31,16 @@ It will keep a process to re-generate the file each times you change the sources
 #### Without ES6 modules
 
 - Fetch the project files (download, clone, etc...)
-- Add a `<script>` to use file in `dist/translate.js`
+- Add a `<script>` to use file in `dist/translate-client.js`
 
 #### With ES6 modules
 
 - Fetch the project files (download, clone, etc...)
-- Import the client with `import Translate from 'translate-client-js''`
+- Import the client with `import TranslateClient from 'translate-client-js''`
 
 ### How to use it
 
-- Create a new instance of Translate with `var translateClient = new Translate(config)` <br />
+- Create a new instance of Translate with `var translateClient = new TranslateClient(config)` <br />
 Here is the default configuration : <br >
 ```
 {

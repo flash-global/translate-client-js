@@ -1,11 +1,10 @@
-import Gateway from "../Service/gateway";
+import Gateway from '../Service/gateway';
 
 /**
  * @param {Object} config
  * @returns {Gateway}
  */
-export default function(config)
-{
+export default function (config) {
     const gateway = new Gateway();
 
     gateway.baseUrl = config.baseUrl;
