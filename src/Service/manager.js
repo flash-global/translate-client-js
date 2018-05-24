@@ -5,9 +5,11 @@ export default class Manager {
         this.defaultLanguage = '';
         this.fallbackLanguage = '';
         this.cacheDuration = 0;
-        this.gateway = null;
         this.localStorageKey = '';
         this.translations = null;
+
+        /** @type {Gateway} */
+        this.gateway = null;
     }
 
     init() {
@@ -25,6 +27,14 @@ export default class Manager {
      */
     translate(key) {
         return this.pullIfNeeded().then(() => this.findTranslation(key));
+    }
+
+    /**
+     * @param {Array} keys
+     * @returns {Promise<Array,Error>}
+     */
+    translateMultiple(keys) {
+        return this.pullIfNeeded().then(() => this.findTranslations(keys));
     }
 
     /**
@@ -148,5 +158,13 @@ export default class Manager {
         const translation = this.translations[key];
 
         return translation !== undefined ? translation : key;
+    }
+
+    /**
+     * @param {Array} keys
+     * @returns {Array}
+     */
+    findTranslations(keys) {
+        return keys.map(key => this.findTranslation(key));
     }
 }

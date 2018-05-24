@@ -78,3 +78,17 @@ it('Test set fallbackLanguage', () => {
     expect(translate.config.fallbackLanguage).toEqual('en_FR');
     expect(managerMock.reset).toHaveBeenCalledTimes(1);
 });
+
+it('Test call translateMultiple', () => {
+    const fixtureKeys = ['key1', 'key2'];
+    const fixturePromise = new Promise(() => {});
+
+    const translate = new TranslateClient({});
+
+    managerMock.translateMultiple = jest.fn();
+    managerMock.translateMultiple.mockReturnValueOnce(fixturePromise);
+
+    expect(translate.translateMultiple(fixtureKeys)).toBe(fixturePromise);
+    expect(managerMock.translateMultiple).toHaveBeenCalledWith(fixtureKeys);
+    expect(managerMock.translateMultiple).toHaveBeenCalledTimes(1);
+});

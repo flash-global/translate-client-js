@@ -15,6 +15,8 @@ export default class TranslateClient {
         };
 
         this.config = {};
+
+        /** @type {Manager} */
         this.manager = null;
 
         this.mergeConfig(config);
@@ -27,6 +29,14 @@ export default class TranslateClient {
      */
     translate(key) {
         return this.manager.translate(key);
+    }
+
+    /**
+     * @param {Array} keys
+     * @returns {Promise<Array, Error>}
+     */
+    translateMultiple(keys) {
+        return this.manager.translateMultiple(keys);
     }
 
     /**

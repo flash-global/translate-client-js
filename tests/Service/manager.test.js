@@ -241,3 +241,29 @@ it('Test reset', () => {
 
     expect(manager.translations).toEqual(null);
 });
+
+it('Test translateMultiple will not pull new translations', () => {
+    const fixtureKeys = ['translation1', 'translation3'];
+    const fixtureResult = ['This is the first translation', "C'est la troisième traduction"];
+
+    const fixturePulledAt = new Date();
+    fixturePulledAt.setDate(fixturePulledAt.getDate() - 0.5);
+
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.gateway = gatewayMock;
+    manager.cacheDuration = 3600 * 24;
+    manager.translations = Object.assign({pulledAt: fixturePulledAt}, fixtureTranslations);
+
+    manager.translateMultiple(fixtureKeys)
+        .then(result => {
+            expect(result).toEqual(fixtureResult);
+            expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
+        })
+        .catch(error => console.log(error));
+});
