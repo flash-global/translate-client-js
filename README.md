@@ -24,8 +24,8 @@ It's a javascript client to use translate api.
 It will keep a process to re-generate the file each times you change the sources
 - Generate dist file: execute command `yarn dist` (result path: `dist/translate.js`)
 - Execute unit tests: execute command `yarn test` (code coverage page path: `coverage/lcov-report/index.html`)
-- When you push your changes, don't forget to generate dist file !!
-- Update the npm package: `npm login`(to log with yoctu account) and `npm publish`(don't forget to change version in pakcgaes.json !!)
+- When you push your changes, don't forget to generate dist file !
+- Update the npm package: `npm login`(to log with yoctu account) and `npm publish`(don't forget to change version in package.json)
 
 ## How to integrate it
 ### How to get the client
