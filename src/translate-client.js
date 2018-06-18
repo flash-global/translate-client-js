@@ -38,6 +38,13 @@ export default class TranslateClient {
     translateMultiple(keys) {
         return this.manager.translateMultiple(keys);
     }
+   
+    /**
+     * @returns {Promise<Array, Error>}
+     */
+    getAllTranslations() {
+        return this.manager.getAllTranslations();
+    }
 
     /**
      * @param {Object} config

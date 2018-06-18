@@ -92,3 +92,15 @@ it('Test call translateMultiple', () => {
     expect(managerMock.translateMultiple).toHaveBeenCalledWith(fixtureKeys);
     expect(managerMock.translateMultiple).toHaveBeenCalledTimes(1);
 });
+
+it('test getAllTranslation() is called', () => {
+    const fixturePromise = new Promise(() => {});
+
+    const translate = new TranslateClient({});
+
+    managerMock.getAllTranslations = jest.fn();
+    managerMock.getAllTranslations.mockReturnValueOnce(fixturePromise);
+
+    expect(translate.getAllTranslations()).toBe(fixturePromise);
+    expect(managerMock.getAllTranslations).toHaveBeenCalledTimes(1);
+});
