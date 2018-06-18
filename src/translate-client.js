@@ -38,7 +38,7 @@ export default class TranslateClient {
     translateMultiple(keys) {
         return this.manager.translateMultiple(keys);
     }
-   
+
     /**
      * @returns {Promise<Array, Error>}
      */
