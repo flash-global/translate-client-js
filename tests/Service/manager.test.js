@@ -186,7 +186,7 @@ it('Test translate will pull because saved translations are outdated', () => {
     manager.fallbackLanguage = 'fr_FR';
     manager.gateway = gatewayMock;
     manager.cacheDuration = 3600 * 24;
-    manager.translations = Object.assign({pulledAt: fixturePulledAt}, fixtureTranslations);
+    manager.translations = Object.assign({ pulledAt: fixturePulledAt }, fixtureTranslations);
 
     const promiseDefaultTranslations = new Promise(resolve => resolve(fixtureDefaultI18nTranslations));
     const promiseFallbackTranslations = new Promise(resolve => resolve(fixtureFallbackI18nTranslations));
@@ -358,4 +358,48 @@ it('Test translateMultiple will not pull new translations', () => {
             expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
         })
         .catch(error => console.log(error));
+});
+
+it('tests createCopy()', () => {
+    const fixturePulledAt = new Date();
+    const manager = new Manager();
+    manager.translations = Object.assign(
+        {
+            pulledAt: fixturePulledAt,
+            defaultLanguage: 'en_US',
+            fallbackLanguage: 'fr_FR'
+        },
+        fixtureTranslations
+    );
+
+    const copy = manager.createCopy();
+    expect(copy).toEqual(fixtureTranslations);
+});
+
+it('tests getAllTranslations()', () => {
+    const fixtureKeys = ['yes', 'no'];
+    const fixtureResult = ['oui', 'non'];
+
+    const fixturePulledAt = new Date();
+    fixturePulledAt.setDate(fixturePulledAt.getDate() - 0.5);
+
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.gateway = gatewayMock;
+    manager.cacheDuration = 3600 * 24;
+    manager.translations = Object.assign(
+        {
+            pulledAt: fixturePulledAt,
+            defaultLanguage: 'en_US',
+            fallbackLanguage: 'fr_FR'
+        },
+        fixtureTranslations
+    );
+
+    manager.getAllTranslations().then(result => expect(result).toEqual(fixtureTranslations));
 });

@@ -38,7 +38,24 @@ export default class Manager {
     }
 
     /**
-     *
+     *  @returns {Promise<Object,Error>}
+     */
+    getAllTranslations() {
+        return this.pullIfNeeded().then(() => this.createCopy());
+    }
+
+    /**
+     *  @returns {Object}
+     */
+    createCopy() {
+        const copy = Object.assign({}, this.translations);
+        delete copy.pulledAt;
+        delete copy.defaultLanguage;
+        delete copy.fallbackLanguage;
+        return copy;
+    }
+
+    /**
      * @returns {Promise<undefined,Error>}
      */
     pullIfNeeded() {

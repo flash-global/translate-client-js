@@ -40,6 +40,13 @@ export default class TranslateClient {
     }
 
     /**
+     * @returns {Promise<Array, Error>}
+     */
+    getAllTranslations() {
+        return this.manager.getAllTranslations();
+    }
+
+    /**
      * @param {Object} config
      */
     mergeConfig(config) {
