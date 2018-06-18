@@ -401,5 +401,5 @@ it('tests getAllTranslations()', () => {
         fixtureTranslations
     );
 
-    manager.getAllTranslations().then(result => expect(result).toBe(fixtureTranslations));
+    manager.getAllTranslations().then(result => expect(result).toEqual(fixtureTranslations));
 });
