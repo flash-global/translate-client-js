@@ -81,6 +81,23 @@ it('Test init result no translations because not stored on localStorage', () => 
     expect(global.localStorage.getItem).toHaveBeenCalledTimes(1);
 });
 
+it('Test init result no translations because it is not a JSON', () => {
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+
+    global.localStorage = {
+        getItem: jest.fn()
+    };
+
+    global.localStorage.getItem.mockReturnValueOnce("null");
+
+    manager.init();
+
+    expect(manager.translations).toEqual(null);
+    expect(global.localStorage.getItem).toHaveBeenCalledWith('key');
+    expect(global.localStorage.getItem).toHaveBeenCalledTimes(1);
+});
+
 it('Test init result no translations because it is not a valid JSON', () => {
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -89,7 +106,7 @@ it('Test init result no translations because it is not a valid JSON', () => {
         getItem: jest.fn()
     };
 
-    global.localStorage.getItem.mockReturnValueOnce('null');
+    global.localStorage.getItem.mockReturnValueOnce("{'test': 123");
 
     manager.init();
 
@@ -136,6 +153,7 @@ it('Test translate will pull because there is not saved translate', () => {
     manager.localStorageKey = 'key';
     manager.defaultLanguage = 'en_US';
     manager.fallbackLanguage = 'fr_FR';
+    manager.namespace = '/test';
     manager.gateway = gatewayMock;
 
     const promiseDefaultTranslations = new Promise(resolve => resolve(fixtureDefaultI18nTranslations));
@@ -165,7 +183,57 @@ it('Test translate will pull because there is not saved translate', () => {
             expect(savedTranslations).toEqual(Object.assign(
                 {
                     defaultLanguage: 'en_US',
-                    fallbackLanguage: 'fr_FR'
+                    fallbackLanguage: 'fr_FR',
+                    namespace: '/test',
+                },
+                fixtureTranslations
+            ));
+        })
+        .catch(error => console.log(error));
+});
+
+it('Test translate will pull because saved translations have not any date', () => {
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.gateway = gatewayMock;
+    manager.cacheDuration = 3600 * 24;
+    manager.namespace = '/test';
+    manager.translations = Object.assign({}, fixtureTranslations);
+
+    const promiseDefaultTranslations = new Promise(resolve => resolve(fixtureDefaultI18nTranslations));
+    const promiseFallbackTranslations = new Promise(resolve => resolve(fixtureFallbackI18nTranslations));
+
+    global.localStorage = {
+        setItem: jest.fn()
+    };
+
+    gatewayMock.pull
+        .mockReturnValueOnce(promiseDefaultTranslations)
+        .mockReturnValueOnce(promiseFallbackTranslations);
+
+    manager.translate('translation1')
+        .then(result => {
+            expect(result).toEqual("This is the first translation");
+
+            expect(gatewayMock.pull.mock.calls).toEqual([
+                ['en_US'],
+                ['fr_FR']
+            ]);
+            expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+
+            const savedTranslations = JSON.parse(global.localStorage.setItem.mock.calls[0][1]);
+            delete savedTranslations.pulledAt;
+
+            expect(savedTranslations).toEqual(Object.assign(
+                {
+                    defaultLanguage: 'en_US',
+                    fallbackLanguage: 'fr_FR',
+                    namespace: '/test',
                 },
                 fixtureTranslations
             ));
@@ -175,7 +243,7 @@ it('Test translate will pull because there is not saved translate', () => {
 
 it('Test translate will pull because saved translations are outdated', () => {
     const fixturePulledAt = new Date();
-    fixturePulledAt.setDate(fixturePulledAt.getDate() - 1.1);
+    fixturePulledAt.setHours(fixturePulledAt.getHours() + 25);
 
     const gatewayMock = new Gateway();
     gatewayMock.pull = jest.fn();
@@ -186,6 +254,7 @@ it('Test translate will pull because saved translations are outdated', () => {
     manager.fallbackLanguage = 'fr_FR';
     manager.gateway = gatewayMock;
     manager.cacheDuration = 3600 * 24;
+    manager.namespace = '/test';
     manager.translations = Object.assign({ pulledAt: fixturePulledAt }, fixtureTranslations);
 
     const promiseDefaultTranslations = new Promise(resolve => resolve(fixtureDefaultI18nTranslations));
@@ -215,7 +284,8 @@ it('Test translate will pull because saved translations are outdated', () => {
             expect(savedTranslations).toEqual(Object.assign(
                 {
                     defaultLanguage: 'en_US',
-                    fallbackLanguage: 'fr_FR'
+                    fallbackLanguage: 'fr_FR',
+                    namespace: '/test',
                 },
                 fixtureTranslations
             ));
@@ -236,11 +306,13 @@ it('Test translate will pull new translations because there is not the same lang
     manager.fallbackLanguage = 'fr_FR';
     manager.gateway = gatewayMock;
     manager.cacheDuration = 3600 * 24;
+    manager.namespace = '/test';
     manager.translations = Object.assign(
         {
             pulledAt: fixturePulledAt,
             defaultLanguage: 'fr_FR',
-            fallbackLanguage: 'en_US'
+            fallbackLanguage: 'en_US',
+            namespace: '/test',
         },
         fixtureTranslations
     );
@@ -272,7 +344,8 @@ it('Test translate will pull new translations because there is not the same lang
             expect(savedTranslations).toEqual(Object.assign(
                 {
                     defaultLanguage: 'en_US',
-                    fallbackLanguage: 'fr_FR'
+                    fallbackLanguage: 'fr_FR',
+                    namespace: '/test',
                 },
                 fixtureTranslations
             ));
@@ -280,7 +353,7 @@ it('Test translate will pull new translations because there is not the same lang
         .catch(error => console.log(error));
 });
 
-it('Test translate will not pull new translations', () => {
+it('Test translate will pull new translations because there is not the same namespace', () => {
     const fixturePulledAt = new Date();
     fixturePulledAt.setDate(fixturePulledAt.getDate() - 0.5);
 
@@ -293,11 +366,73 @@ it('Test translate will not pull new translations', () => {
     manager.fallbackLanguage = 'fr_FR';
     manager.gateway = gatewayMock;
     manager.cacheDuration = 3600 * 24;
+    manager.namespace = '/test';
     manager.translations = Object.assign(
         {
             pulledAt: fixturePulledAt,
             defaultLanguage: 'en_US',
-            fallbackLanguage: 'fr_FR'
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test2',
+        },
+        fixtureTranslations
+    );
+
+    const promiseDefaultTranslations = new Promise(resolve => resolve(fixtureDefaultI18nTranslations));
+    const promiseFallbackTranslations = new Promise(resolve => resolve(fixtureFallbackI18nTranslations));
+
+    global.localStorage = {
+        setItem: jest.fn()
+    };
+
+    gatewayMock.pull
+        .mockReturnValueOnce(promiseDefaultTranslations)
+        .mockReturnValueOnce(promiseFallbackTranslations);
+
+    manager.translate('translation1')
+        .then(result => {
+            expect(result).toEqual("This is the first translation");
+
+            expect(gatewayMock.pull.mock.calls).toEqual([
+                ['en_US'],
+                ['fr_FR']
+            ]);
+            expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+
+            const savedTranslations = JSON.parse(global.localStorage.setItem.mock.calls[0][1]);
+            delete savedTranslations.pulledAt;
+
+            expect(savedTranslations).toEqual(Object.assign(
+                {
+                    defaultLanguage: 'en_US',
+                    fallbackLanguage: 'fr_FR',
+                    namespace: '/test',
+                },
+                fixtureTranslations
+            ));
+        })
+        .catch(error => console.log(error));
+});
+
+it('Test translate will not pull new translations', () => {
+    const fixturePulledAt = new Date();
+    fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
+
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.gateway = gatewayMock;
+    manager.cacheDuration = 3600 * 24;
+    manager.namespace = '/test';
+    manager.translations = Object.assign(
+        {
+            pulledAt: fixturePulledAt,
+            defaultLanguage: 'en_US',
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
         },
         fixtureTranslations
     );
@@ -305,6 +440,38 @@ it('Test translate will not pull new translations', () => {
     manager.translate('translation1')
         .then(result => {
             expect(result).toEqual("This is the first translation");
+            expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
+        })
+        .catch(error => console.log(error));
+});
+
+it('Test translate will not pull new translations and manage key language', () => {
+    const fixturePulledAt = new Date();
+    fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
+
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'key';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.gateway = gatewayMock;
+    manager.cacheDuration = 3600 * 24;
+    manager.namespace = '/test';
+    manager.translations = Object.assign(
+        {
+            pulledAt: fixturePulledAt,
+            defaultLanguage: 'key',
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
+        },
+        fixtureTranslations
+    );
+
+    manager.translate('translation5')
+        .then(result => {
+            expect(result).toEqual('{{translation5}}');
             expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
         })
         .catch(error => console.log(error));
@@ -332,7 +499,7 @@ it('Test translateMultiple will not pull new translations', () => {
     const fixtureResult = ['This is the first translation', "C'est la troisième traduction"];
 
     const fixturePulledAt = new Date();
-    fixturePulledAt.setDate(fixturePulledAt.getDate() - 0.5);
+    fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
     const gatewayMock = new Gateway();
     gatewayMock.pull = jest.fn();
@@ -343,11 +510,13 @@ it('Test translateMultiple will not pull new translations', () => {
     manager.fallbackLanguage = 'fr_FR';
     manager.gateway = gatewayMock;
     manager.cacheDuration = 3600 * 24;
+    manager.namespace = '/test';
     manager.translations = Object.assign(
         {
             pulledAt: fixturePulledAt,
             defaultLanguage: 'en_US',
-            fallbackLanguage: 'fr_FR'
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
         },
         fixtureTranslations
     );
@@ -377,11 +546,8 @@ it('tests createCopy()', () => {
 });
 
 it('tests getAllTranslations()', () => {
-    const fixtureKeys = ['yes', 'no'];
-    const fixtureResult = ['oui', 'non'];
-
     const fixturePulledAt = new Date();
-    fixturePulledAt.setDate(fixturePulledAt.getDate() - 0.5);
+    fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
     const gatewayMock = new Gateway();
     gatewayMock.pull = jest.fn();
