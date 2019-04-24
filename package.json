@@ -1,6 +1,6 @@
 {
   "name": "translate-client-js",
-  "version": "1.3.0",
+  "version": "1.4.0",
   "description": "Translate client for javascript application",
   "main": "src/translate-client.js",
   "repository": "git@github.com:flash-global/translate-client-js.git",
