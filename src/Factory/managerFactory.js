@@ -13,6 +13,7 @@ export default function (config) {
     manager.fallbackLanguage = config.fallbackLanguage;
     manager.cacheDuration = config.cacheDuration;
     manager.localStorageKey = config.localStorageKey;
+    manager.namespace = config.namespace;
 
     return manager;
 }

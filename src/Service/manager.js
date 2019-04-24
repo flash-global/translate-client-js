@@ -7,6 +7,7 @@ export default class Manager {
         this.cacheDuration = 0;
         this.localStorageKey = '';
         this.translations = null;
+        this.namespace = '';
 
         /** @type {Gateway} */
         this.gateway = null;
@@ -114,7 +115,8 @@ export default class Manager {
         }
 
         if (this.translations.defaultLanguage !== this.defaultLanguage ||
-            this.translations.fallbackLanguage !== this.fallbackLanguage) {
+            this.translations.fallbackLanguage !== this.fallbackLanguage ||
+            this.translations.namespace !== this.namespace) {
             return true;
         }
 
@@ -168,6 +170,7 @@ export default class Manager {
                 pulledAt: new Date(),
                 defaultLanguage: this.defaultLanguage,
                 fallbackLanguage: this.fallbackLanguage,
+                namespace: this.namespace,
             },
             fallbackTranslations,
             defaultTranslations,
@@ -179,6 +182,10 @@ export default class Manager {
      * @returns {String}
      */
     findTranslation(key) {
+        if (this.defaultLanguage === 'key') {
+            return this.translations[key] !== undefined ? `{${key}}` : `{{${key}}}`;
+        }
+
         const translation = this.translations[key];
 
         return translation !== undefined ? translation : key;
