@@ -188,7 +188,7 @@ export default class Manager {
     }
 
     buildDefaultValue(key) {
-        return this.defaultLanguage === 'key' ? `{{${key}}}`: key;
+        return this.defaultLanguage === 'key' ? `{{${key}}}` : key;
     }
 
     /**
