@@ -182,13 +182,13 @@ export default class Manager {
      * @returns {String}
      */
     findTranslation(key) {
+        if (this.defaultLanguage === 'key') {
+            return this.translations[key] !== undefined ? `{${key}}` : `{{${key}}}`;
+        }
+
         const translation = this.translations[key];
 
-        return translation !== undefined ? translation : this.buildDefaultValue(key);
-    }
-
-    buildDefaultValue(key) {
-        return this.defaultLanguage === 'key' ? `{{${key}}}` : key;
+        return translation !== undefined ? translation : key;
     }
 
     /**

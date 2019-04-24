@@ -449,7 +449,39 @@ it('Test translate will not pull new translations and return key', () => {
         .catch(error => console.log(error));
 });
 
-it('Test translate will not pull new translations and manage key language', () => {
+it('Test translate will not pull new translations and key language found', () => {
+    const fixturePulledAt = new Date();
+    fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
+
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'key';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.gateway = gatewayMock;
+    manager.cacheDuration = 3600 * 24;
+    manager.namespace = '/test';
+    manager.translations = Object.assign(
+        {
+            pulledAt: fixturePulledAt,
+            defaultLanguage: 'key',
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
+        },
+        fixtureTranslations
+    );
+
+    manager.translate('translation1')
+        .then(result => {
+            expect(result).toEqual('{translation1}');
+            expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
+        })
+        .catch(error => console.log(error));
+});
+
+it('Test translate will not pull new translations and key language not found', () => {
     const fixturePulledAt = new Date();
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
