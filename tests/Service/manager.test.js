@@ -475,7 +475,7 @@ it('Test translate will not pull new translations and key language found', () =>
 
     manager.translate('translation1')
         .then(result => {
-            expect(result).toEqual('{translation1}');
+            expect(result).toEqual('[translation1]');
             expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
         })
         .catch(error => console.log(error));
@@ -507,7 +507,7 @@ it('Test translate will not pull new translations and key language not found', (
 
     manager.translate('translation5')
         .then(result => {
-            expect(result).toEqual('{{translation5}}');
+            expect(result).toEqual('[[translation5]]');
             expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
         })
         .catch(error => console.log(error));

@@ -183,7 +183,7 @@ export default class Manager {
      */
     findTranslation(key) {
         if (this.defaultLanguage === 'key') {
-            return this.translations[key] !== undefined ? `{${key}}` : `{{${key}}}`;
+            return this.translations[key] !== undefined ? `[${key}]` : `[[${key}]]`;
         }
 
         const translation = this.translations[key];
