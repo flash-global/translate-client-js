@@ -182,7 +182,7 @@ export default class Manager {
      * @returns {String}
      */
     findTranslation(key) {
-        if (this.defaultLanguage === 'key') {
+        if (this.defaultLanguage.toLowerCase() === 'key') {
             return this.translations[key] !== undefined ? `[${key}]` : `[[${key}]]`;
         }
 
