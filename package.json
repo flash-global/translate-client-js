@@ -1,6 +1,6 @@
 {
   "name": "translate-client-js",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "Translate client for javascript application",
   "main": "src/translate-client.js",
   "author": "yoctu <contact@yoctu.com>",
