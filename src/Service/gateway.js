@@ -34,7 +34,7 @@ export default class Gateway {
      * @returns {String}
      */
     generateUrl(lang) {
-        return `${this.translateBaseUrl}/api/i18n-string?namespace=${this.namespace}&perPage=100000&lang=${lang}`;
+        return `${this.translateBaseUrl}/api/i18n-string?namespace=${this.namespace}&perPage=100000&lang=${lang}&forceUtf8=on`;
     }
 
     /**
