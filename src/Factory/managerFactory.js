@@ -14,6 +14,7 @@ export default function (config) {
     manager.cacheDuration = config.cacheDuration;
     manager.localStorageKey = config.localStorageKey;
     manager.namespace = config.namespace;
+    manager.forceLowerKey = config.forceLowerKey;
 
     return manager;
 }

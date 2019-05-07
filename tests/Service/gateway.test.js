@@ -117,7 +117,7 @@ it('Test pull success', () => {
         expect(jsonMock).toHaveBeenCalledTimes(1);
 
         expect(global.fetch).toHaveBeenCalledWith(
-            `base-url/api/i18n-string?namespace=/test&perPage=100000&lang=${fixtureLang}`
+            `base-url/api/i18n-string?namespace=/test&perPage=100000&lang=${fixtureLang}&forceUtf8=on`
         );
         expect(global.fetch).toHaveBeenCalledTimes(1);
 
