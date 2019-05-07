@@ -26,7 +26,8 @@ it('Test call constructor', () => {
         fallbackLanguage: 'en_US',
         namespace: '/namespace',
         cacheDuration: 86400,
-        localStorageKey: 'translations'
+        localStorageKey: 'translations',
+        forceLowerKey: false,
     };
 
     managerMock.init = jest.fn();

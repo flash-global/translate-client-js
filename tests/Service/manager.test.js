@@ -8,6 +8,25 @@ const fixtureDefaultI18nTranslations = [
         content: "This is the first translation",
         created_at: "2018-01-01 01:01:01",
         id: "1",
+        key: "Translation1",
+        lang: "en_US",
+        namespace: "/test"
+    },
+    {
+        content: "This is the second translation",
+        created_at: "2018-02-02 02:02:02",
+        id: "2",
+        key: "translation2",
+        lang: "en_US",
+        namespace: "/test"
+    }
+];
+
+const fixtureDefaultI18nTranslationsLowerKeys = [
+    {
+        content: "This is the first translation",
+        created_at: "2018-01-01 01:01:01",
+        id: "1",
         key: "translation1",
         lang: "en_US",
         namespace: "/test"
@@ -23,6 +42,33 @@ const fixtureDefaultI18nTranslations = [
 ];
 
 const fixtureFallbackI18nTranslations = [
+    {
+        content: "C'est la première traduction",
+        created_at: "2018-01-01 01:01:01",
+        id: "3",
+        key: "Translation1",
+        lang: "fr_FR",
+        namespace: "/test"
+    },
+    {
+        content: "C'est la seconde traduction",
+        created_at: "2018-02-02 02:02:02",
+        id: "4",
+        key: "translation2",
+        lang: "fr_FR",
+        namespace: "/test"
+    },
+    {
+        content: "C'est la troisième traduction",
+        created_at: "2018-03-03 03:03:03",
+        id: "5",
+        key: "translation3",
+        lang: "fr_FR",
+        namespace: "/test"
+    }
+];
+
+const fixtureFallbackI18nTranslationsLowerKeys = [
     {
         content: "C'est la première traduction",
         created_at: "2018-01-01 01:01:01",
@@ -50,6 +96,12 @@ const fixtureFallbackI18nTranslations = [
 ];
 
 const fixtureTranslations = {
+    "Translation1": "This is the first translation",
+    "translation2": "This is the second translation",
+    "translation3": "C'est la troisième traduction"
+};
+
+const fixtureTranslationsLowerKeys = {
     "translation1": "This is the first translation",
     "translation2": "This is the second translation",
     "translation3": "C'est la troisième traduction"
@@ -64,6 +116,7 @@ it('Test constructor', () => {
     expect(manager.gateway).toEqual(null);
     expect(manager.localStorageKey).toEqual('');
     expect(manager.translations).toEqual(null);
+    expect(manager.forceLowerKey).toEqual(false);
 });
 
 it('Test init result no translations because not stored on localStorage', () => {
@@ -154,7 +207,7 @@ it('Test translate will pull because there is not saved translate', () => {
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    manager.translate('translation1')
+    manager.translate('Translation1')
         .then(result => {
             expect(result).toEqual("This is the first translation");
 
@@ -174,6 +227,50 @@ it('Test translate will pull because there is not saved translate', () => {
                     namespace: '/test',
                 },
                 fixtureTranslations
+            ));
+        })
+        .catch(error => console.log(error));
+});
+
+it('Test translate will pull because there is not saved translate and force lower key', () => {
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.namespace = '/test';
+    manager.gateway = gatewayMock;
+    manager.forceLowerKey = true;
+
+    const promiseDefaultTranslations = new Promise(resolve => resolve(fixtureDefaultI18nTranslationsLowerKeys));
+    const promiseFallbackTranslations = new Promise(resolve => resolve(fixtureFallbackI18nTranslationsLowerKeys));
+
+    gatewayMock.pull
+        .mockReturnValueOnce(promiseDefaultTranslations)
+        .mockReturnValueOnce(promiseFallbackTranslations);
+
+    manager.translate('Translation1')
+        .then(result => {
+            expect(result).toEqual("This is the first translation");
+
+            expect(gatewayMock.pull.mock.calls).toEqual([
+                ['en_US'],
+                ['fr_FR']
+            ]);
+            expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+
+            const savedTranslations = JSON.parse(localStorage.getItem('key'));
+            delete savedTranslations.pulledAt;
+
+            expect(savedTranslations).toEqual(Object.assign(
+                {
+                    defaultLanguage: 'en_US',
+                    fallbackLanguage: 'fr_FR',
+                    namespace: '/test',
+                },
+                fixtureTranslationsLowerKeys
             ));
         })
         .catch(error => console.log(error));
@@ -199,7 +296,7 @@ it('Test translate will pull because saved translations have not any date', () =
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    manager.translate('translation1')
+    manager.translate('Translation1')
         .then(result => {
             expect(result).toEqual("This is the first translation");
 
@@ -247,7 +344,7 @@ it('Test translate will pull because saved translations are outdated', () => {
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    manager.translate('translation1')
+    manager.translate('Translation1')
         .then(result => {
             expect(result).toEqual("This is the first translation");
 
@@ -303,7 +400,7 @@ it('Test translate will pull new translations because there is not the same lang
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    manager.translate('translation1')
+    manager.translate('Translation1')
         .then(result => {
             expect(result).toEqual("This is the first translation");
 
@@ -360,7 +457,7 @@ it('Test translate will pull new translations because there is not the same name
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    manager.translate('translation1')
+    manager.translate('Translation1')
         .then(result => {
             expect(result).toEqual("This is the first translation");
 
@@ -409,7 +506,7 @@ it('Test translate will not pull new translations', () => {
         fixtureTranslations
     );
 
-    manager.translate('translation1')
+    manager.translate('Translation1')
         .then(result => {
             expect(result).toEqual("This is the first translation");
             expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
@@ -473,9 +570,9 @@ it('Test translate will not pull new translations and key language found', () =>
         fixtureTranslations
     );
 
-    manager.translate('translation1')
+    manager.translate('Translation1')
         .then(result => {
-            expect(result).toEqual('[translation1]');
+            expect(result).toEqual('[Translation1]');
             expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
         })
         .catch(error => console.log(error));
@@ -527,7 +624,7 @@ it('Test reset', () => {
 });
 
 it('Test translateMultiple will not pull new translations', () => {
-    const fixtureKeys = ['translation1', 'translation3'];
+    const fixtureKeys = ['Translation1', 'translation3'];
     const fixtureResult = ['This is the first translation', "C'est la troisième traduction"];
 
     const fixturePulledAt = new Date();
@@ -551,6 +648,42 @@ it('Test translateMultiple will not pull new translations', () => {
             namespace: '/test',
         },
         fixtureTranslations
+    );
+
+    manager.translateMultiple(fixtureKeys)
+        .then(result => {
+            expect(result).toEqual(fixtureResult);
+            expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
+        })
+        .catch(error => console.log(error));
+});
+
+it('Test translateMultiple with force lower key will not pull new translations', () => {
+    const fixtureKeys = ['Translation1', 'translation3'];
+    const fixtureResult = ['This is the first translation', "C'est la troisième traduction"];
+
+    const fixturePulledAt = new Date();
+    fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
+
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.gateway = gatewayMock;
+    manager.cacheDuration = 3600 * 24;
+    manager.namespace = '/test';
+    manager.forceLowerKey = true;
+    manager.translations = Object.assign(
+        {
+            pulledAt: fixturePulledAt,
+            defaultLanguage: 'en_US',
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
+        },
+        fixtureTranslationsLowerKeys
     );
 
     manager.translateMultiple(fixtureKeys)
@@ -590,11 +723,13 @@ it('tests getAllTranslations()', () => {
     manager.fallbackLanguage = 'fr_FR';
     manager.gateway = gatewayMock;
     manager.cacheDuration = 3600 * 24;
+    manager.namespace = '/test';
     manager.translations = Object.assign(
         {
             pulledAt: fixturePulledAt,
             defaultLanguage: 'en_US',
-            fallbackLanguage: 'fr_FR'
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
         },
         fixtureTranslations
     );

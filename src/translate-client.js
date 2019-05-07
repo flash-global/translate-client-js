@@ -12,6 +12,7 @@ export default class TranslateClient {
             namespace: '',
             cacheDuration: 86400,
             localStorageKey: 'translations',
+            forceLowerKey: false,
         };
 
         this.config = {};

@@ -8,6 +8,7 @@ export default class Manager {
         this.localStorageKey = '';
         this.translations = null;
         this.namespace = '';
+        this.forceLowerKey = false;
 
         /** @type {Gateway} */
         this.gateway = null;
@@ -24,10 +25,26 @@ export default class Manager {
 
     /**
      * @param {String} key
+     * @returns {String}
+     */
+    parseKey(key) {
+        return this.forceLowerKey ? key.toString().toLowerCase() : key;
+    }
+
+    /**
+     * @param {String} key
+     * @returns {String}
+     */
+    parseKeys(keys) {
+        return this.forceLowerKey ? keys.map(key => key.toString().toLowerCase()) : keys;
+    }
+
+    /**
+     * @param {String} key
      * @returns {Promise<String,Error>}
      */
     translate(key) {
-        return this.pullIfNeeded().then(() => this.findTranslation(key));
+        return this.pullIfNeeded().then(() => this.findTranslation(this.parseKey(key)));
     }
 
     /**
@@ -35,7 +52,7 @@ export default class Manager {
      * @returns {Promise<Array,Error>}
      */
     translateMultiple(keys) {
-        return this.pullIfNeeded().then(() => this.findTranslations(keys));
+        return this.pullIfNeeded().then(() => this.findTranslations(this.parseKeys(keys)));
     }
 
     /**
@@ -53,6 +70,7 @@ export default class Manager {
         delete copy.pulledAt;
         delete copy.defaultLanguage;
         delete copy.fallbackLanguage;
+        delete copy.namespace;
         return copy;
     }
 
@@ -126,19 +144,11 @@ export default class Manager {
     /**
      * @returns {Promise<undefined,Error>}
      */
-    pull() {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const defaultTranslations = await this.pullLanguage(this.defaultLanguage);
-                const fallbackTranslations = await this.pullLanguage(this.fallbackLanguage);
+    async pull() {
+        const defaultTranslations = await this.pullLanguage(this.defaultLanguage);
+        const fallbackTranslations = await this.pullLanguage(this.fallbackLanguage);
 
-                this.save(defaultTranslations, fallbackTranslations);
-
-                resolve();
-            } catch (error) {
-                reject(error);
-            }
-        });
+        this.save(defaultTranslations, fallbackTranslations);
     }
 
     /**
@@ -146,7 +156,8 @@ export default class Manager {
      * @returns {Promise<Array,Error>}
      */
     pullLanguage(language) {
-        return this.gateway.pull(language).then(translations => parser(translations));
+        return this.gateway.pull(language)
+            .then(translations => parser(translations, this.forceLowerKey));
     }
 
     /**
