@@ -23,10 +23,18 @@ export default class Manager {
         this.translations = null;
     }
 
+    /**
+     * @param {String} key
+     * @returns {String}
+     */
     parseKey(key) {
         return this.forceLowerKey ? key.toString().toLowerCase() : key;
     }
 
+    /**
+     * @param {String} key
+     * @returns {String}
+     */
     parseKeys(keys) {
         return this.forceLowerKey ? keys.map(key => key.toString().toLowerCase()) : keys;
     }
