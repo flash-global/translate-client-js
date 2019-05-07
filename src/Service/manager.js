@@ -23,12 +23,20 @@ export default class Manager {
         this.translations = null;
     }
 
+    parseKey(key) {
+        return this.forceLowerKey ? key.toString().toLowerCase() : key;
+    }
+
+    parseKeys(keys) {
+        return this.forceLowerKey ? keys.map(key => key.toString().toLowerCase()) : keys;
+    }
+
     /**
      * @param {String} key
      * @returns {Promise<String,Error>}
      */
     translate(key) {
-        return this.pullIfNeeded().then(() => this.findTranslation(this.forceLowerKey ? key.toString().toLowerCase(): key));
+        return this.pullIfNeeded().then(() => this.findTranslation(this.parseKey(key)));
     }
 
     /**
@@ -36,7 +44,7 @@ export default class Manager {
      * @returns {Promise<Array,Error>}
      */
     translateMultiple(keys) {
-        return this.pullIfNeeded().then(() => this.findTranslations(this.forceLowerKey ? keys.map(key => key.toString().toLowerCase()): keys));
+        return this.pullIfNeeded().then(() => this.findTranslations(this.parseKeys(keys)));
     }
 
     /**
@@ -140,7 +148,8 @@ export default class Manager {
      * @returns {Promise<Array,Error>}
      */
     pullLanguage(language) {
-        return this.gateway.pull(language).then(translations => parser(translations, this.forceLowerKey));
+        return this.gateway.pull(language)
+            .then(translations => parser(translations, this.forceLowerKey));
     }
 
     /**

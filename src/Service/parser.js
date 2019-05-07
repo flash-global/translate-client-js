@@ -7,7 +7,7 @@ export default function (i18nTranslations, forceLowerKey = false) {
 
     Object.keys(i18nTranslations).forEach((index) => {
         const translation = i18nTranslations[index];
-        const key = forceLowerKey ? translation.key.toLowerCase(): translation.key;
+        const key = forceLowerKey ? translation.key.toLowerCase() : translation.key;
 
         translations[key] = translation.content;
     });
