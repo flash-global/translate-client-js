@@ -15,6 +15,10 @@ script:
   - yarn eslint
   - yarn test
 
+before_deloy:
+  - yarn dist
+  - npm version $TRAVIS_TAG
+
 deploy:
   provider: npm
   api_key:
