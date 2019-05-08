@@ -15,7 +15,10 @@ script:
   - yarn eslint
   - yarn test
 
-before_deloy: yarn dist && rm .travis.yml && npm version $TRAVIS_TAG
+before_deploy: 
+  - yarn dist
+  - rm .travis.yml
+  - npm version $TRAVIS_TAG
 
 deploy:
   provider: npm
