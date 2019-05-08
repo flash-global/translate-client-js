@@ -22,15 +22,15 @@ stages:
 jobs:
   include:
     - stage: Tests
-      before_script: yarn
+    
       script:
         - yarn eslint
         - yarn test
 
     - stage: Deploy
       script: skip
+      if: tag IS present
       before_script:
-        - yarn
         - yarn dist
       deploy:
         - provider: npm
