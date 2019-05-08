@@ -22,7 +22,6 @@ stages:
 jobs:
   include:
     - stage: Tests
-    
       script:
         - yarn eslint
         - yarn test
