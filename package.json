@@ -1,6 +1,6 @@
 {
   "name": "translate-client-js",
-  "version": "1.6.0",
+  "version": "1.8.0",
   "description": "Translate client for javascript application",
   "main": "src/translate-client.js",
   "author": "yoctu <contact@yoctu.com>",
@@ -19,10 +19,10 @@
     "webpack-cli": "^3.3.1"
   },
   "scripts": {
-    "dev": "webpack --mode development",
-    "dist": "webpack --mode production",
+    "start": "webpack --mode development",
+    "build": "webpack --mode production",
     "test": "jest",
-    "eslint": "eslint src"
+    "lint": "eslint src"
   },
   "dependencies": {
     "babel-polyfill": "^6.26.0",

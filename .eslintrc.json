@@ -4,6 +4,7 @@
         "indent": ["error", 4],
         "no-undef": ["off"], // disable error on undefined
         "no-param-reassign": ["off"], // disable error when class attribute is reassign
-        "class-methods-use-this": ["off"] // disable error when class method do not use this
+        "class-methods-use-this": ["off"], // disable error when class method do not use this
+        "no-console": ["off"]
     }
 }

@@ -14,16 +14,15 @@ It's a javascript client to use translate api.
 - Webpack to manage modules [https://webpack.js.org/](https://webpack.js.org/)
 - Babel to compile the javascript to be compatible with old browsers [https://babeljs.io/](https://babeljs.io/)
 - Tools executed with Node.js version 10 [https://nodejs.org/en/](https://nodejs.org/en/)
-- Packages managed with `yarn` [https://nodejs.org/en/](https://nodejs.org/en/)
 - ESLing to linting the code [https://eslint.org/](https://eslint.org/)
 
 ## How to install it and modify it
 
-- Execute command `yarn`
-- Generate development file: execute command `yarn dev` (result path: `dist/translate.js`) <br />
+- Execute command `npm ci`
+- Generate development file: execute command `npm run start` (result path: `dist/translate.js`) <br />
 It will keep a process to re-generate the file each times you change the sources
-- Generate dist file: execute command `yarn dist` (result path: `dist/translate.js`)
-- Execute unit tests: execute command `yarn test` (code coverage page path: `coverage/lcov-report/index.html`)
+- Generate dist file: execute command `npm run build` (result path: `dist/translate.js`)
+- Execute unit tests: execute command `npm run test` (code coverage page path: `coverage/lcov-report/index.html`)
 - When you push your changes, don't forget to generate dist file !
 - Update the npm package: `npm login`(to log with yoctu account) and `npm publish`(don't forget to change version in package.json)
 

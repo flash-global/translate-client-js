@@ -6,18 +6,17 @@ node_js:
 sudo: false
 
 cache:
-  yarn: true
   directories:
     - ".eslintcache"
     - node_modules
 
 script:
-  - yarn eslint
-  - yarn test
+  - npm run lint
+  - npm run test
 
 before_deploy: 
   - npm --no-git-tag-version version $TRAVIS_TAG
-  - yarn dist
+  - yarn build
   - rm .travis.yml
 
 deploy:
