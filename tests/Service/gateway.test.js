@@ -7,7 +7,7 @@ it('Test constructor', () => {
     expect(gateway.namespace).toEqual('');
 });
 
-it('Test pull throw error', () => {
+it('Test pull throw error', async () => {
     const fixtureLang = 'fr_FR';
     const gateway = new Gateway();
 
@@ -19,12 +19,14 @@ it('Test pull throw error', () => {
     global.fetch = jest.fn();
     global.fetch.mockReturnValueOnce(promise);
 
-    gateway.pull(fixtureLang).catch(error => {
+    try {
+        await gateway.pull(fixtureLang);
+    } catch (error) {
         expect(error).toBe(expectedError);
-    });
+    }
 });
 
-it('Test pull error status code', () => {
+it('Test pull error status code', async () => {
     const fixtureLang = 'fr_FR';
     const gateway = new Gateway();
     const responseMock = {
@@ -39,14 +41,15 @@ it('Test pull error status code', () => {
     global.fetch = jest.fn();
     global.fetch.mockReturnValueOnce(promise);
 
-    gateway.pull(fixtureLang).catch(error => {
+    try {
+        await gateway.pull(fixtureLang);
+    } catch (error) {
         expect(fetch).toHaveBeenCalledTimes(1);
-
         expect(error).toEqual(expectedError);
-    });
+    }
 });
 
-it('Test pull error response type', () => {
+it('Test pull error response type', async () => {
     const fixtureLang = 'fr_FR';
     const gateway = new Gateway();
 
@@ -68,17 +71,19 @@ it('Test pull error response type', () => {
     global.fetch = jest.fn();
     global.fetch.mockReturnValueOnce(promise);
 
-    gateway.pull(fixtureLang).catch(error => {
+    try {
+        await gateway.pull(fixtureLang);
+    } catch(error) {
         expect(fetch).toHaveBeenCalledTimes(1);
 
         expect(error).toEqual(expectedError);
 
         expect(headersMock.get).toHaveBeenCalledWith('Content-Type');
         expect(headersMock.get).toHaveBeenCalledTimes(1);
-    });
+    }
 });
 
-it('Test pull success', () => {
+it('Test pull success', async () => {
     const fixtureLang = 'fr_FR';
     const fixtureResultData = [{plop: 'plop'}, {plip: 'plap'}];
     const gateway = new Gateway();
@@ -110,19 +115,19 @@ it('Test pull success', () => {
     global.fetch = jest.fn();
     global.fetch.mockReturnValueOnce(promise);
 
-    gateway.pull(fixtureLang).then(dataResult => {
-        expect(headersMock.get).toHaveBeenCalledWith('Content-Type');
-        expect(headersMock.get).toHaveBeenCalledTimes(1);
+    const dataResult = await gateway.pull(fixtureLang);
 
-        expect(jsonMock).toHaveBeenCalledTimes(1);
+    expect(headersMock.get).toHaveBeenCalledWith('Content-Type');
+    expect(headersMock.get).toHaveBeenCalledTimes(1);
 
-        expect(global.fetch).toHaveBeenCalledWith(
-            `base-url/api/i18n-string?namespace=/test&perPage=100000&lang=${fixtureLang}&forceUtf8=on`
-        );
-        expect(global.fetch).toHaveBeenCalledTimes(1);
+    expect(jsonMock).toHaveBeenCalledTimes(1);
 
-        expect(dataResult).toBe(fixtureResultData);
-    });
+    expect(global.fetch).toHaveBeenCalledWith(
+        `base-url/api/i18n-string?namespace=/test&perPage=100000&lang=${fixtureLang}&forceUtf8=on`
+    );
+    expect(global.fetch).toHaveBeenCalledTimes(1);
+
+    expect(dataResult).toBe(fixtureResultData);
 });
 
 it('Test set base url', () => {

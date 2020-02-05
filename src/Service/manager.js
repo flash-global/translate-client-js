@@ -145,8 +145,20 @@ export default class Manager {
      * @returns {Promise<undefined,Error>}
      */
     async pull() {
-        const defaultTranslations = await this.pullLanguage(this.defaultLanguage);
-        const fallbackTranslations = await this.pullLanguage(this.fallbackLanguage);
+        let defaultTranslations = {};
+        let fallbackTranslations = {};
+
+        try {
+            defaultTranslations = await this.pullLanguage(this.defaultLanguage);
+        } catch (e) {
+            console.error(e);
+        }
+
+        try {
+            fallbackTranslations = await this.pullLanguage(this.fallbackLanguage);
+        } catch (e) {
+            console.error(e);
+        }
 
         this.save(defaultTranslations, fallbackTranslations);
     }

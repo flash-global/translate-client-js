@@ -101,6 +101,17 @@ const fixtureTranslations = {
     "translation3": "C'est la troisième traduction"
 };
 
+const fixtureTranslationsFailedDefault = {
+    "Translation1": "C'est la première traduction",
+    "translation2": "C'est la seconde traduction",
+    "translation3": "C'est la troisième traduction"
+};
+
+const fixtureTranslationsFailedFallback = {
+    "Translation1": "This is the first translation",
+    "translation2": "This is the second translation"
+};
+
 const fixtureTranslationsLowerKeys = {
     "translation1": "This is the first translation",
     "translation2": "This is the second translation",
@@ -189,7 +200,7 @@ it('Test init result success fetch saved translations without pulledAt', () => {
     expect(manager.translations).toEqual(fixtureTranslations);
 });
 
-it('Test translate will pull because there is not saved translate', () => {
+it('Test translate will pull because there is not saved translate', async () => {
     const gatewayMock = new Gateway();
     gatewayMock.pull = jest.fn();
 
@@ -207,32 +218,113 @@ it('Test translate will pull because there is not saved translate', () => {
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    manager.translate('Translation1')
-        .then(result => {
-            expect(result).toEqual("This is the first translation");
+    const result = await manager.translate('Translation1');
 
-            expect(gatewayMock.pull.mock.calls).toEqual([
-                ['en_US'],
-                ['fr_FR']
-            ]);
-            expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+    expect(result).toEqual("This is the first translation");
+    expect(gatewayMock.pull.mock.calls).toEqual([
+        ['en_US'],
+        ['fr_FR']
+    ]);
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
 
-            const savedTranslations = JSON.parse(localStorage.getItem('key'));
-            delete savedTranslations.pulledAt;
+    const savedTranslations = JSON.parse(localStorage.getItem('key'));
+    delete savedTranslations.pulledAt;
 
-            expect(savedTranslations).toEqual(Object.assign(
-                {
-                    defaultLanguage: 'en_US',
-                    fallbackLanguage: 'fr_FR',
-                    namespace: '/test',
-                },
-                fixtureTranslations
-            ));
-        })
-        .catch(error => console.log(error));
+    expect(savedTranslations).toEqual(Object.assign(
+        {
+            defaultLanguage: 'en_US',
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
+        },
+        fixtureTranslations
+    ));
 });
 
-it('Test translate will pull because there is not saved translate and force lower key', () => {
+it('Test translate will pull because there is not saved translate, but will failed for default translations', async () => {
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.namespace = '/test';
+    manager.gateway = gatewayMock;
+
+    const promiseDefaultTranslations = Promise.reject("Some error");
+    const promiseFallbackTranslations = new Promise(resolve => resolve(fixtureFallbackI18nTranslations));
+
+    gatewayMock.pull
+        .mockReturnValueOnce(promiseDefaultTranslations)
+        .mockReturnValueOnce(promiseFallbackTranslations);
+
+    jest.spyOn(console, 'error').mockImplementation(error => expect(error).toEqual("Some error"));
+
+    const result = await manager.translate('Translation1');
+    
+    expect(result).toEqual("C'est la première traduction");
+    expect(gatewayMock.pull.mock.calls).toEqual([
+        ['en_US'],
+        ['fr_FR']
+    ]);
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+
+    const savedTranslations = JSON.parse(localStorage.getItem('key'));
+    delete savedTranslations.pulledAt;
+
+    expect(savedTranslations).toEqual(Object.assign(
+        {
+            defaultLanguage: 'en_US',
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
+        },
+        fixtureTranslationsFailedDefault
+    ));
+});
+
+it('Test translate will pull because there is not saved translate, but will failed for fallback translations', async () => {
+    const gatewayMock = new Gateway();
+    gatewayMock.pull = jest.fn();
+
+    const manager = new Manager();
+    manager.localStorageKey = 'key';
+    manager.defaultLanguage = 'en_US';
+    manager.fallbackLanguage = 'fr_FR';
+    manager.namespace = '/test';
+    manager.gateway = gatewayMock;
+
+    const promiseDefaultTranslations = Promise.resolve(fixtureDefaultI18nTranslations);
+    const promiseFallbackTranslations = Promise.reject("Some error 2");
+
+    gatewayMock.pull
+        .mockReturnValueOnce(promiseDefaultTranslations)
+        .mockReturnValueOnce(promiseFallbackTranslations);
+
+    jest.spyOn(console, 'error').mockImplementation(error => expect(error).toEqual("Some error 2"));
+
+    const result = await manager.translate('Translation1');
+    
+    expect(result).toEqual("This is the first translation");
+    expect(gatewayMock.pull.mock.calls).toEqual([
+        ['en_US'],
+        ['fr_FR']
+    ]);
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+
+    const savedTranslations = JSON.parse(localStorage.getItem('key'));
+    delete savedTranslations.pulledAt;
+
+    expect(savedTranslations).toEqual(Object.assign(
+        {
+            defaultLanguage: 'en_US',
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
+        },
+        fixtureTranslationsFailedFallback
+    ));
+});
+
+it('Test translate will pull because there is not saved translate and force lower key', async () => {
     const gatewayMock = new Gateway();
     gatewayMock.pull = jest.fn();
 
@@ -251,32 +343,29 @@ it('Test translate will pull because there is not saved translate and force lowe
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    manager.translate('Translation1')
-        .then(result => {
-            expect(result).toEqual("This is the first translation");
+    const result = await manager.translate('Translation1');
 
-            expect(gatewayMock.pull.mock.calls).toEqual([
-                ['en_US'],
-                ['fr_FR']
-            ]);
-            expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+    expect(result).toEqual("This is the first translation");
+    expect(gatewayMock.pull.mock.calls).toEqual([
+        ['en_US'],
+        ['fr_FR']
+    ]);
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
 
-            const savedTranslations = JSON.parse(localStorage.getItem('key'));
-            delete savedTranslations.pulledAt;
+    const savedTranslations = JSON.parse(localStorage.getItem('key'));
+    delete savedTranslations.pulledAt;
 
-            expect(savedTranslations).toEqual(Object.assign(
-                {
-                    defaultLanguage: 'en_US',
-                    fallbackLanguage: 'fr_FR',
-                    namespace: '/test',
-                },
-                fixtureTranslationsLowerKeys
-            ));
-        })
-        .catch(error => console.log(error));
+    expect(savedTranslations).toEqual(Object.assign(
+        {
+            defaultLanguage: 'en_US',
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
+        },
+        fixtureTranslationsLowerKeys
+    ));
 });
 
-it('Test translate will pull because saved translations have not any date', () => {
+it('Test translate will pull because saved translations have not any date', async () => {
     const gatewayMock = new Gateway();
     gatewayMock.pull = jest.fn();
 
@@ -296,32 +385,29 @@ it('Test translate will pull because saved translations have not any date', () =
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    manager.translate('Translation1')
-        .then(result => {
-            expect(result).toEqual("This is the first translation");
+    const result = await manager.translate('Translation1');
 
-            expect(gatewayMock.pull.mock.calls).toEqual([
-                ['en_US'],
-                ['fr_FR']
-            ]);
-            expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+    expect(result).toEqual("This is the first translation");
+    expect(gatewayMock.pull.mock.calls).toEqual([
+        ['en_US'],
+        ['fr_FR']
+    ]);
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
 
-            const savedTranslations = JSON.parse(localStorage.getItem('key'));
-            delete savedTranslations.pulledAt;
+    const savedTranslations = JSON.parse(localStorage.getItem('key'));
+    delete savedTranslations.pulledAt;
 
-            expect(savedTranslations).toEqual(Object.assign(
-                {
-                    defaultLanguage: 'en_US',
-                    fallbackLanguage: 'fr_FR',
-                    namespace: '/test',
-                },
-                fixtureTranslations
-            ));
-        })
-        .catch(error => console.log(error));
+    expect(savedTranslations).toEqual(Object.assign(
+        {
+            defaultLanguage: 'en_US',
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
+        },
+        fixtureTranslations
+    ));
 });
 
-it('Test translate will pull because saved translations are outdated', () => {
+it('Test translate will pull because saved translations are outdated', async () => {
     const fixturePulledAt = new Date();
     fixturePulledAt.setHours(fixturePulledAt.getHours() + 25);
 
@@ -344,32 +430,28 @@ it('Test translate will pull because saved translations are outdated', () => {
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    manager.translate('Translation1')
-        .then(result => {
-            expect(result).toEqual("This is the first translation");
+    const result = await manager.translate('Translation1');
+    expect(result).toEqual("This is the first translation");
+    expect(gatewayMock.pull.mock.calls).toEqual([
+        ['en_US'],
+        ['fr_FR']
+    ]);
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
 
-            expect(gatewayMock.pull.mock.calls).toEqual([
-                ['en_US'],
-                ['fr_FR']
-            ]);
-            expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+    const savedTranslations = JSON.parse(localStorage.getItem('key'));
+    delete savedTranslations.pulledAt;
 
-            const savedTranslations = JSON.parse(localStorage.getItem('key'));
-            delete savedTranslations.pulledAt;
-
-            expect(savedTranslations).toEqual(Object.assign(
-                {
-                    defaultLanguage: 'en_US',
-                    fallbackLanguage: 'fr_FR',
-                    namespace: '/test',
-                },
-                fixtureTranslations
-            ));
-        })
-        .catch(error => console.log(error));
+    expect(savedTranslations).toEqual(Object.assign(
+        {
+            defaultLanguage: 'en_US',
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
+        },
+        fixtureTranslations
+    ));
 });
 
-it('Test translate will pull new translations because there is not the same languages', () => {
+it('Test translate will pull new translations because there is not the same languages', async () => {
     const fixturePulledAt = new Date();
     fixturePulledAt.setDate(fixturePulledAt.getDate() - 0.5);
 
@@ -400,32 +482,29 @@ it('Test translate will pull new translations because there is not the same lang
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    manager.translate('Translation1')
-        .then(result => {
-            expect(result).toEqual("This is the first translation");
+    const result = await manager.translate('Translation1');
+    
+    expect(result).toEqual("This is the first translation");
+    expect(gatewayMock.pull.mock.calls).toEqual([
+        ['en_US'],
+        ['fr_FR']
+    ]);
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
 
-            expect(gatewayMock.pull.mock.calls).toEqual([
-                ['en_US'],
-                ['fr_FR']
-            ]);
-            expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+    const savedTranslations = JSON.parse(localStorage.getItem('key'));
+    delete savedTranslations.pulledAt;
 
-            const savedTranslations = JSON.parse(localStorage.getItem('key'));
-            delete savedTranslations.pulledAt;
-
-            expect(savedTranslations).toEqual(Object.assign(
-                {
-                    defaultLanguage: 'en_US',
-                    fallbackLanguage: 'fr_FR',
-                    namespace: '/test',
-                },
-                fixtureTranslations
-            ));
-        })
-        .catch(error => console.log(error));
+    expect(savedTranslations).toEqual(Object.assign(
+        {
+            defaultLanguage: 'en_US',
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
+        },
+        fixtureTranslations
+    ));
 });
 
-it('Test translate will pull new translations because there is not the same namespace', () => {
+it('Test translate will pull new translations because there is not the same namespace', async () => {
     const fixturePulledAt = new Date();
     fixturePulledAt.setDate(fixturePulledAt.getDate() - 0.5);
 
@@ -457,32 +536,29 @@ it('Test translate will pull new translations because there is not the same name
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    manager.translate('Translation1')
-        .then(result => {
-            expect(result).toEqual("This is the first translation");
+    const result = await manager.translate('Translation1');
 
-            expect(gatewayMock.pull.mock.calls).toEqual([
-                ['en_US'],
-                ['fr_FR']
-            ]);
-            expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
+    expect(result).toEqual("This is the first translation");
+    expect(gatewayMock.pull.mock.calls).toEqual([
+        ['en_US'],
+        ['fr_FR']
+    ]);
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(2);
 
-            const savedTranslations = JSON.parse(localStorage.getItem('key'));
-            delete savedTranslations.pulledAt;
+    const savedTranslations = JSON.parse(localStorage.getItem('key'));
+    delete savedTranslations.pulledAt;
 
-            expect(savedTranslations).toEqual(Object.assign(
-                {
-                    defaultLanguage: 'en_US',
-                    fallbackLanguage: 'fr_FR',
-                    namespace: '/test',
-                },
-                fixtureTranslations
-            ));
-        })
-        .catch(error => console.log(error));
+    expect(savedTranslations).toEqual(Object.assign(
+        {
+            defaultLanguage: 'en_US',
+            fallbackLanguage: 'fr_FR',
+            namespace: '/test',
+        },
+        fixtureTranslations
+    ));
 });
 
-it('Test translate will not pull new translations', () => {
+it('Test translate will not pull new translations', async () => {
     const fixturePulledAt = new Date();
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
@@ -506,15 +582,12 @@ it('Test translate will not pull new translations', () => {
         fixtureTranslations
     );
 
-    manager.translate('Translation1')
-        .then(result => {
-            expect(result).toEqual("This is the first translation");
-            expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
-        })
-        .catch(error => console.log(error));
+    const result = await manager.translate('Translation1');
+    expect(result).toEqual("This is the first translation");
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
 });
 
-it('Test translate will not pull new translations and return key', () => {
+it('Test translate will not pull new translations and return key', async () => {
     const fixturePulledAt = new Date();
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
@@ -538,15 +611,12 @@ it('Test translate will not pull new translations and return key', () => {
         fixtureTranslations
     );
 
-    manager.translate('translation5')
-        .then(result => {
-            expect(result).toEqual("translation5");
-            expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
-        })
-        .catch(error => console.log(error));
+    const result = await manager.translate('translation5');
+    expect(result).toEqual("translation5");
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
 });
 
-it('Test translate will not pull new translations and key language found', () => {
+it('Test translate will not pull new translations and key language found', async () => {
     const fixturePulledAt = new Date();
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
@@ -570,15 +640,12 @@ it('Test translate will not pull new translations and key language found', () =>
         fixtureTranslations
     );
 
-    manager.translate('Translation1')
-        .then(result => {
-            expect(result).toEqual('[Translation1]');
-            expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
-        })
-        .catch(error => console.log(error));
+    const result = await manager.translate('Translation1');
+    expect(result).toEqual('[Translation1]');
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
 });
 
-it('Test translate will not pull new translations and key language not found', () => {
+it('Test translate will not pull new translations and key language not found', async () => {
     const fixturePulledAt = new Date();
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
@@ -602,12 +669,9 @@ it('Test translate will not pull new translations and key language not found', (
         fixtureTranslations
     );
 
-    manager.translate('translation5')
-        .then(result => {
-            expect(result).toEqual('[[translation5]]');
-            expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
-        })
-        .catch(error => console.log(error));
+    const result = await manager.translate('translation5');
+    expect(result).toEqual('[[translation5]]');
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
 });
 
 it('Test reset', () => {
@@ -623,7 +687,7 @@ it('Test reset', () => {
     expect(manager.translations).toEqual(null);
 });
 
-it('Test translateMultiple will not pull new translations', () => {
+it('Test translateMultiple will not pull new translations', async () => {
     const fixtureKeys = ['Translation1', 'translation3'];
     const fixtureResult = ['This is the first translation', "C'est la troisième traduction"];
 
@@ -650,15 +714,12 @@ it('Test translateMultiple will not pull new translations', () => {
         fixtureTranslations
     );
 
-    manager.translateMultiple(fixtureKeys)
-        .then(result => {
-            expect(result).toEqual(fixtureResult);
-            expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
-        })
-        .catch(error => console.log(error));
+    const result = await manager.translateMultiple(fixtureKeys);
+    expect(result).toEqual(fixtureResult);
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
 });
 
-it('Test translateMultiple with force lower key will not pull new translations', () => {
+it('Test translateMultiple with force lower key will not pull new translations', async () => {
     const fixtureKeys = ['Translation1', 'translation3'];
     const fixtureResult = ['This is the first translation', "C'est la troisième traduction"];
 
@@ -686,12 +747,9 @@ it('Test translateMultiple with force lower key will not pull new translations',
         fixtureTranslationsLowerKeys
     );
 
-    manager.translateMultiple(fixtureKeys)
-        .then(result => {
-            expect(result).toEqual(fixtureResult);
-            expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
-        })
-        .catch(error => console.log(error));
+    const result = await manager.translateMultiple(fixtureKeys);
+    expect(result).toEqual(fixtureResult);
+    expect(gatewayMock.pull).toHaveBeenCalledTimes(0);
 });
 
 it('tests createCopy()', () => {
@@ -710,7 +768,7 @@ it('tests createCopy()', () => {
     expect(copy).toEqual(fixtureTranslations);
 });
 
-it('tests getAllTranslations()', () => {
+it('tests getAllTranslations()', async () => {
     const fixturePulledAt = new Date();
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
@@ -734,5 +792,6 @@ it('tests getAllTranslations()', () => {
         fixtureTranslations
     );
 
-    manager.getAllTranslations().then(result => expect(result).toEqual(fixtureTranslations));
+    const result = await manager.getAllTranslations();
+    expect(result).toEqual(fixtureTranslations)
 });
