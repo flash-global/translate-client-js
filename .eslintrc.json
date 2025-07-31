@@ -5,6 +5,15 @@
         "no-undef": ["off"], // disable error on undefined
         "no-param-reassign": ["off"], // disable error when class attribute is reassign
         "class-methods-use-this": ["off"], // disable error when class method do not use this
-        "no-console": ["off"]
+        "no-console": ["off"],
+        "comma-dangle": ["off"],
+        "no-useless-return": ["off"],
+        "consistent-return": ["off"],
+        "import/extensions": ["error", "ignorePackages", {
+            "js": "always",
+            "mjs": "always"
+        }],
+        "func-names": "off",
+        "arrow-parens": "off"
     }
 }

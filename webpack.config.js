@@ -1,36 +1,31 @@
-const path = require('path');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+import { resolve, dirname } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
-module.exports = (env, argv) => {
+import { CleanWebpackPlugin } from 'clean-webpack-plugin';
+// import { BundleAnalyzerPlugin } from 'webpack-bundle-analyzer';
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+export default function (env, argv) {
     const config = {
-        entry: ['./build/bootstrap.js'],
-        output:  {
-            path: path.resolve(__dirname, 'dist'),
-            filename: 'translate-client.js'
+        entry: './build/bootstrap.js',
+        output: {
+          path: resolve('dist'),
+          filename: 'translate-client.js',
+          library: {
+            name: 'TranslateClient',   // the global variable name
+            type: 'window',            // attaches to `window` (for browsers)
+          },
         },
-        module: {
-            rules: [
-                {
-                    test: /\.js$/,
-                    exclude: /(node_modules|test)/,
-                    use: {
-                        loader: 'babel-loader'
-                    }
-                }
-            ]
-        },
+        // No module.rules at all
         plugins: [
-            new CleanWebpackPlugin(['dist']),
-        ]
+         
+          new CleanWebpackPlugin(),
+          // new BundleAnalyzerPlugin()
+        ],
     };
 
-    if(argv.mode === 'development') {
-        config.watch = true;
-        config.watchOptions = {
-            poll: true
-        };
-        config.devtool = 'source-map';
-    }
-
     return config;
-};
+}

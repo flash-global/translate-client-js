@@ -10,11 +10,9 @@ It's a javascript client to use translate api.
 
 ## Technical stack
 
-- ECMAScript 6 to use last functionalities like class, promise, async/await, etc... [http://es6-features.org](http://es6-features.org)
-- Webpack to manage modules [https://webpack.js.org/](https://webpack.js.org/)
-- Babel to compile the javascript to be compatible with old browsers [https://babeljs.io/](https://babeljs.io/)
-- Tools executed with Node.js version 10 [https://nodejs.org/en/](https://nodejs.org/en/)
-- ESLing to linting the code [https://eslint.org/](https://eslint.org/)
+- webpack
+- vitest
+- eslint
 
 ## How to install it and modify it
 

@@ -1,17 +1,32 @@
-import managerFactory from '../src/Factory/managerFactory';
-import TranslateClient from '../src/translate-client';
-import Manager from '../src/Service/manager';
+import { vi, beforeEach, it, expect } from 'vitest';
+import managerFactory from '../src/Factory/managerFactory.js';
+import TranslateClient from '../src/translate-client.js';
+import Manager from '../src/Service/manager.js';
 
-jest.mock('../src/Service/manager');
-jest.mock('../src/Factory/managerFactory');
+vi.mock('../src/Service/manager.js', () => {
+    return {
+      __esModule: true,
+      default: vi.fn(), // Manager becomes a mock constructor
+    };
+  }
+);
+
+vi.mock('../src/Factory/managerFactory.js', () => {
+    return {
+      __esModule: true,
+      default: vi.fn(), // Manager becomes a mock constructor
+    };
+  }
+);
 
 let managerMock = null;
 
-beforeEach(() => {
+beforeEach(async () => {
+    vi.resetModules();
+  
     Manager.mockClear();
-
+  
     managerMock = new Manager();
-    
     managerFactory.mockReturnValueOnce(managerMock);
 });
 
@@ -30,7 +45,7 @@ it('Test call constructor', () => {
         forceLowerKey: false,
     };
 
-    managerMock.init = jest.fn();
+    managerMock.init = vi.fn();
 
     const translate = new TranslateClient(fixtureConfig);
 
@@ -47,9 +62,11 @@ it('Test call translate', () => {
     const fixtureKey = 'key';
     const fixturePromise = new Promise(() => {});
 
+    managerMock.init = vi.fn();
+
     const translate = new TranslateClient({});
 
-    managerMock.translate = jest.fn();
+    managerMock.translate = vi.fn();
     managerMock.translate.mockReturnValueOnce(fixturePromise);
 
     expect(translate.translate(fixtureKey)).toBe(fixturePromise);
@@ -59,9 +76,10 @@ it('Test call translate', () => {
 });
 
 it('Test set defaultLanguage', () => {
+    managerMock.init = vi.fn();
     const translate = new TranslateClient({});
 
-    managerMock.reset = jest.fn();
+    managerMock.reset = vi.fn();
 
     translate.defaultLanguage = 'en_GB';
 
@@ -70,9 +88,10 @@ it('Test set defaultLanguage', () => {
 });
 
 it('Test set fallbackLanguage', () => {
+    managerMock.init = vi.fn();
     const translate = new TranslateClient({});
 
-    managerMock.reset = jest.fn();
+    managerMock.reset = vi.fn();
 
     translate.fallbackLanguage = 'en_FR';
 
@@ -83,10 +102,10 @@ it('Test set fallbackLanguage', () => {
 it('Test call translateMultiple', () => {
     const fixtureKeys = ['key1', 'key2'];
     const fixturePromise = new Promise(() => {});
-
+    managerMock.init = vi.fn();
     const translate = new TranslateClient({});
 
-    managerMock.translateMultiple = jest.fn();
+    managerMock.translateMultiple = vi.fn();
     managerMock.translateMultiple.mockReturnValueOnce(fixturePromise);
 
     expect(translate.translateMultiple(fixtureKeys)).toEqual(fixturePromise);
@@ -96,10 +115,10 @@ it('Test call translateMultiple', () => {
 
 it('test getAllTranslation() is called', () => {
     const fixturePromise = new Promise(() => {});
-
+    managerMock.init = vi.fn();
     const translate = new TranslateClient({});
 
-    managerMock.getAllTranslations = jest.fn();
+    managerMock.getAllTranslations = vi.fn();
     managerMock.getAllTranslations.mockReturnValueOnce(fixturePromise);
 
     expect(translate.getAllTranslations()).toEqual(fixturePromise);

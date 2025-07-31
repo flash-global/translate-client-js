@@ -1,7 +1,8 @@
-import Manager from '../../src/Service/manager';
-import Gateway from '../../src/Service/gateway';
+import { it, vi, expect } from 'vitest';
+import Manager from '../../src/Service/manager.js';
+import Gateway from '../../src/Service/gateway.js';
 
-jest.mock('../../src/Service/gateway');
+vi.mock('../../src/Service/gateway.js');
 
 const fixtureDefaultI18nTranslations = [
     {
@@ -202,7 +203,7 @@ it('Test init result success fetch saved translations without pulledAt', () => {
 
 it('Test translate will pull because there is not saved translate', async () => {
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -242,7 +243,7 @@ it('Test translate will pull because there is not saved translate', async () => 
 
 it('Test translate will pull because there is not saved translate, but will failed for default translations', async () => {
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -258,7 +259,7 @@ it('Test translate will pull because there is not saved translate, but will fail
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    jest.spyOn(console, 'error').mockImplementation(error => expect(error).toEqual("Some error"));
+    vi.spyOn(console, 'error').mockImplementation(error => expect(error).toEqual("Some error"));
 
     const result = await manager.translate('Translation1');
     
@@ -284,7 +285,7 @@ it('Test translate will pull because there is not saved translate, but will fail
 
 it('Test translate will pull because there is not saved translate, but will failed for fallback translations', async () => {
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -300,7 +301,7 @@ it('Test translate will pull because there is not saved translate, but will fail
         .mockReturnValueOnce(promiseDefaultTranslations)
         .mockReturnValueOnce(promiseFallbackTranslations);
 
-    jest.spyOn(console, 'error').mockImplementation(error => expect(error).toEqual("Some error 2"));
+    vi.spyOn(console, 'error').mockImplementation(error => expect(error).toEqual("Some error 2"));
 
     const result = await manager.translate('Translation1');
     
@@ -326,7 +327,7 @@ it('Test translate will pull because there is not saved translate, but will fail
 
 it('Test translate will pull because there is not saved translate and force lower key', async () => {
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -367,7 +368,7 @@ it('Test translate will pull because there is not saved translate and force lowe
 
 it('Test translate will pull because saved translations have not any date', async () => {
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -412,7 +413,7 @@ it('Test translate will pull because saved translations are outdated', async () 
     fixturePulledAt.setHours(fixturePulledAt.getHours() + 25);
 
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -456,7 +457,7 @@ it('Test translate will pull new translations because there is not the same lang
     fixturePulledAt.setDate(fixturePulledAt.getDate() - 0.5);
 
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -509,7 +510,7 @@ it('Test translate will pull new translations because there is not the same name
     fixturePulledAt.setDate(fixturePulledAt.getDate() - 0.5);
 
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -563,7 +564,7 @@ it('Test translate will not pull new translations', async () => {
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -592,7 +593,7 @@ it('Test translate will not pull new translations and return key', async () => {
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -621,7 +622,7 @@ it('Test translate will not pull new translations and key language found', async
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -650,7 +651,7 @@ it('Test translate will not pull new translations and key language not found', a
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -695,7 +696,7 @@ it('Test translateMultiple will not pull new translations', async () => {
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -727,7 +728,7 @@ it('Test translateMultiple with force lower key will not pull new translations',
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';
@@ -773,7 +774,7 @@ it('tests getAllTranslations()', async () => {
     fixturePulledAt.setHours(fixturePulledAt.getHours() - 12);
 
     const gatewayMock = new Gateway();
-    gatewayMock.pull = jest.fn();
+    gatewayMock.pull = vi.fn();
 
     const manager = new Manager();
     manager.localStorageKey = 'key';

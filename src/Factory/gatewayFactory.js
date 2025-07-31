@@ -1,9 +1,5 @@
-import Gateway from '../Service/gateway';
+import Gateway from '../Service/gateway.js';
 
-/**
- * @param {Object} config
- * @returns {Gateway}
- */
 export default function (config) {
     const gateway = new Gateway();
 

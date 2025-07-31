@@ -1,4 +1,5 @@
-import parser from '../../src/Service/parser';
+import { it, expect } from 'vitest';
+import parser from '../../src/Service/parser.js';
 
 it('Test parse i18nTranslations', () => {
     const fixtureI18nTranslations = {
