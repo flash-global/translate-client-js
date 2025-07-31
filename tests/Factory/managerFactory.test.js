@@ -1,11 +1,12 @@
-import gatewayFactory from '../../src/Factory/gatewayFactory';
-import managerFactory from '../../src/Factory/managerFactory';
-import Manager from '../../src/Service/manager';
-import Gateway from '../../src/Service/gateway';
+import { vi, beforeEach, it } from 'vitest';
+import gatewayFactory from '../../src/Factory/gatewayFactory.js';
+import managerFactory from '../../src/Factory/managerFactory.js';
+import Manager from '../../src/Service/manager.js';
+import Gateway from '../../src/Service/gateway.js';
 
-jest.mock('../../src/Service/manager');
-jest.mock('../../src/Service/gateway');
-jest.mock('../../src/Factory/gatewayFactory');
+vi.mock('../../src/Service/manager.js');
+vi.mock('../../src/Service/gateway.js');
+vi.mock('../../src/Factory/gatewayFactory.js');
 
 let gatewayMock = null;
 

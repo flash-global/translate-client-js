@@ -1,4 +1,4 @@
-import parser from './parser';
+import parser from './parser.js';
 
 export default class Manager {
     constructor() {
@@ -9,8 +9,6 @@ export default class Manager {
         this.translations = null;
         this.namespace = '';
         this.forceLowerKey = false;
-
-        /** @type {Gateway} */
         this.gateway = null;
     }
 
@@ -31,10 +29,6 @@ export default class Manager {
         return this.forceLowerKey ? key.toString().toLowerCase() : key;
     }
 
-    /**
-     * @param {String} key
-     * @returns {String}
-     */
     parseKeys(keys) {
         return this.forceLowerKey ? keys.map(key => key.toString().toLowerCase()) : keys;
     }
@@ -66,7 +60,7 @@ export default class Manager {
      *  @returns {Object}
      */
     createCopy() {
-        const copy = Object.assign({}, this.translations);
+        const copy = structuredClone(this.translations);
         delete copy.pulledAt;
         delete copy.defaultLanguage;
         delete copy.fallbackLanguage;
@@ -74,15 +68,11 @@ export default class Manager {
         return copy;
     }
 
-    /**
-     * @returns {Promise<undefined,Error>}
-     */
-    pullIfNeeded() {
+    async pullIfNeeded() {
         if (this.checkPullNeeded()) {
             return this.pull();
         }
-
-        return new Promise(resolve => resolve());
+        return;
     }
 
     /**
@@ -132,13 +122,13 @@ export default class Manager {
             return true;
         }
 
-        if (this.translations.defaultLanguage !== this.defaultLanguage ||
-            this.translations.fallbackLanguage !== this.fallbackLanguage ||
-            this.translations.namespace !== this.namespace) {
+        if (this.translations.defaultLanguage !== this.defaultLanguage
+            || this.translations.fallbackLanguage !== this.fallbackLanguage
+            || this.translations.namespace !== this.namespace) {
             return true;
         }
 
-        return ((new Date()) - this.translations.pulledAt) / 1000 >= this.cacheDuration;
+        return (Date.now() - this.translations.pulledAt) / 1000 >= this.cacheDuration;
     }
 
     /**
@@ -188,16 +178,14 @@ export default class Manager {
      * @returns {Object}
      */
     merge(defaultTranslations, fallbackTranslations) {
-        return Object.assign(
-            {
-                pulledAt: new Date(),
-                defaultLanguage: this.defaultLanguage,
-                fallbackLanguage: this.fallbackLanguage,
-                namespace: this.namespace,
-            },
-            fallbackTranslations,
-            defaultTranslations,
-        );
+        return {
+            pulledAt: new Date(),
+            defaultLanguage: this.defaultLanguage,
+            fallbackLanguage: this.fallbackLanguage,
+            namespace: this.namespace,
+            ...fallbackTranslations,
+            ...defaultTranslations
+        };
     }
 
     /**

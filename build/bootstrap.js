@@ -1,6 +1,3 @@
-import 'babel-polyfill';
-import 'whatwg-fetch';
+import TranslateClient from '../src/translate-client.js';
 
-import TranslateClient from '../src/translate-client';
-
-global.TranslateClient = TranslateClient;
+export default TranslateClient;

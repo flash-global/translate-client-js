@@ -1,7 +1,8 @@
-import gatewayFactory from '../../src/Factory/gatewayFactory';
-import Gateway from '../../src/Service/gateway';
+import { vi, beforeEach, it, expect } from 'vitest';
+import gatewayFactory from '../../src/Factory/gatewayFactory.js';
+import Gateway from '../../src/Service/gateway.js';
 
-jest.mock('../../src/Service/gateway');
+vi.mock('../../src/Service/gateway.js');
 
 beforeEach(() => {
     Gateway.mockClear();

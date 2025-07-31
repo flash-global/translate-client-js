@@ -4,29 +4,16 @@ export default class Gateway {
         this.namespace = '';
     }
 
-    /**
-     * @param {String} lang
-     * @returns {Promise<Array,Error>}
-     */
-    pull(lang) {
-        return fetch(this.generateUrl(lang))
-            .then((response) => {
-                if (response.ok) {
-                    return response;
-                }
-
-                throw new Error('Response status code not 200');
-            })
-            .then((response) => {
-                const contentType = response.headers.get('Content-Type');
-
-                if (contentType && contentType.indexOf('application/json') !== -1) {
-                    return response;
-                }
-
-                throw new Error('Response type not json');
-            })
-            .then(response => response.json());
+    async pull(lang) {
+        const response = await fetch(this.generateUrl(lang));
+        if (!response.ok) {
+            throw new Error('Response status code not 200');
+        }
+        const contentType = response.headers.get('Content-Type');
+        if (!(contentType && contentType.indexOf('application/json') !== -1)) {
+            throw new Error('Response type not json');
+        }
+        return response.json();
     }
 
     /**

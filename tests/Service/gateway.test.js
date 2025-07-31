@@ -1,4 +1,5 @@
-import Gateway from '../../src/Service/gateway';
+import { vi, it, expect } from 'vitest';
+import Gateway from '../../src/Service/gateway.js';
 
 it('Test constructor', () => {
     const gateway = new Gateway();
@@ -16,7 +17,7 @@ it('Test pull throw error', async () => {
         throw expectedError;
     });
 
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
     global.fetch.mockReturnValueOnce(promise);
 
     try {
@@ -38,7 +39,7 @@ it('Test pull error status code', async () => {
         resolve(responseMock);
     });
 
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
     global.fetch.mockReturnValueOnce(promise);
 
     try {
@@ -54,7 +55,7 @@ it('Test pull error response type', async () => {
     const gateway = new Gateway();
 
     const headersMock = {
-        get: jest.fn()
+        get: vi.fn()
     };
     const responseMock = {
         ok: true,
@@ -68,7 +69,7 @@ it('Test pull error response type', async () => {
         resolve(responseMock);
     });
 
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
     global.fetch.mockReturnValueOnce(promise);
 
     try {
@@ -96,9 +97,9 @@ it('Test pull success', async () => {
     });
 
     const headersMock = {
-        get: jest.fn()
+        get: vi.fn()
     };
-    const jsonMock = jest.fn();
+    const jsonMock = vi.fn();
     const responseMock = {
         ok: true,
         headers: headersMock,
@@ -112,7 +113,7 @@ it('Test pull success', async () => {
         resolve(responseMock);
     });
 
-    global.fetch = jest.fn();
+    global.fetch = vi.fn();
     global.fetch.mockReturnValueOnce(promise);
 
     const dataResult = await gateway.pull(fixtureLang);
