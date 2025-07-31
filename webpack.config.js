@@ -6,13 +6,13 @@ export default function (env, argv) {
     const config = {
         entry: './build/bootstrap.js',
         output: {
-            clean: true,
             path: resolve('dist'),
             filename: 'translate-client.js',
             library: {
                 name: 'TranslateClient', // the global variable name
                 type: 'window', // attaches to `window` (for browsers)
             },
+            clean: true,
         },
         // No module.rules at all
         plugins: [
