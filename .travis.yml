@@ -1,8 +1,7 @@
-language: node_js
-version: 1.0
+dist: jammy
 
-node_js:
-  - '10'
+language: node_js
+node_js: 20.18.3
 
 sudo: false
 
