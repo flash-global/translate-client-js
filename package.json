@@ -1,6 +1,6 @@
 {
-  "name": "translate-client-js",
-  "version": "v1.8.0",
+  "name": "@redspher/translate-client-js",
+  "version": "2.0.0",
   "description": "Translate client for javascript application",
   "main": "src/translate-client.js",
   "author": "yoctu <contact@yoctu.com>",
@@ -28,6 +28,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/flash-global/translate-client-js.git"
+    "url": "git+https://github.com/flash-global/translate-client-js.git"
   }
 }
