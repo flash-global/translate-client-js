@@ -14,3 +14,5 @@ import:
     mode: deep_merge_append
   - source: flash-global/travis:aws/codeartifact/codeartifact.yml@master
     mode: deep_merge_append
+  - source: flash-global/travis:email_notification.yml@master
+    mode: deep_merge_append
