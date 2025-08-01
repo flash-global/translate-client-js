@@ -3,26 +3,14 @@ dist: jammy
 language: node_js
 node_js: 20
 
-sudo: false
+if: type IN(pull_request) OR branch IN (master, develop) OR tag IS present
 
 import:
-  - source: flash-global/travis:aws/codeartifact/codeartifact.yml@master
-    mode: deep_merge_append
   - source: flash-global/travis:common.yml@master
     mode: deep_merge_append
   - source: flash-global/travis:aws/common.yml@master
-    mode: deep_merge_append  
-
-cache:
-  directories:
-    - ".eslintcache"
-    - node_modules
-
-script:
-  - npm run lint
-  - npm run test
-
-before_deploy: 
-  - npm --no-git-tag-version version $TRAVIS_TAG
-  - npm run build
-  - rm .travis.yml
+    mode: deep_merge_append
+  - source: flash-global/travis:js/common.yml@master
+    mode: deep_merge_append
+  - source: flash-global/travis:aws/codeartifact/codeartifact.yml@master
+    mode: deep_merge_append
